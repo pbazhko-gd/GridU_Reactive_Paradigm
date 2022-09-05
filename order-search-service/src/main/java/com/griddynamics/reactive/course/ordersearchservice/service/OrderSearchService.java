@@ -4,9 +4,9 @@ package com.griddynamics.reactive.course.ordersearchservice.service;
 import com.griddynamics.reactive.course.ordersearchservice.domain.Order;
 import com.griddynamics.reactive.course.ordersearchservice.resource.OrderResource;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import wiremock.org.apache.commons.lang3.StringUtils;
 
 import java.time.Duration;
 import java.util.Random;
