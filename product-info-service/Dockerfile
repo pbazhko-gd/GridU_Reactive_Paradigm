@@ -1,5 +1,5 @@
 # build
-FROM gradle:jdk11 as builder
+FROM gradle:7.6.2-jdk11 as builder
 WORKDIR /build
 COPY --chown=gradle:gradle src /build/src
 COPY --chown=gradle:gradle build.gradle settings.gradle /build/
