@@ -1,2 +1,5 @@
 .idea/
 .gradle/
+.env
+.run/
+build/
