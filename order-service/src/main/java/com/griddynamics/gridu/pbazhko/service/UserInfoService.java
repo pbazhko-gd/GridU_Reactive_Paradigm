@@ -16,10 +16,15 @@ public class UserInfoService {
     private final UserInfoMapper userInfoMapper;
 
     public Flux<UserInfoDto> findAllUsers() {
-        return userInfoRepository.findAll().map(userInfoMapper::toDto);
+        return userInfoRepository.findAll()
+                .log()
+                .map(userInfoMapper::toDto)
+                .log();
     }
 
     public Mono<UserInfoDto> findUserByPhone(String phone) {
-        return userInfoRepository.findByPhone(phone).map(userInfoMapper::toDto);
+        return userInfoRepository.findByPhone(phone)
+                .map(userInfoMapper::toDto)
+                .log();
     }
 }
