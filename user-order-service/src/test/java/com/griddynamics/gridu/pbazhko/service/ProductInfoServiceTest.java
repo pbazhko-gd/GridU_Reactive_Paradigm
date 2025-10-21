@@ -3,6 +3,7 @@ package com.griddynamics.gridu.pbazhko.service;
 import com.griddynamics.gridu.pbazhko.config.MongoDBTestContainerConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -16,6 +17,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -29,6 +31,9 @@ class ProductInfoServiceTest {
     @Autowired
     private ProductInfoService productInfoService;
 
+    @Value("${product-info-service.timeout}")
+    private long productInfoServiceTimeout;
+
     private static final String PRODUCT_CODE = "1234";
 
     @Test
@@ -36,7 +41,7 @@ class ProductInfoServiceTest {
         stubFor(get(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE))
                 .willReturn(aResponse()
                         .withStatus(OK.value())
-                        .withHeader("Content-Type", APPLICATION_JSON_VALUE)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBody("[]")));
         StepVerifier.create(productInfoService.findProductsByCode(PRODUCT_CODE))
                 .verifyComplete();
@@ -48,7 +53,7 @@ class ProductInfoServiceTest {
         stubFor(get(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE))
                 .willReturn(aResponse()
                         .withStatus(OK.value())
-                        .withHeader("Content-Type", APPLICATION_JSON_VALUE)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBody("""
                                 [{"productId":"111","productCode":"1234","productName":"Name1","score":2},
                                  {"productId":"222","productCode":"1234","productName":"Name2","score":5}]
@@ -75,7 +80,23 @@ class ProductInfoServiceTest {
         stubFor(get(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE))
                 .willReturn(aResponse()
                         .withStatus(SERVICE_UNAVAILABLE.value())
-                        .withHeader("Content-Type", APPLICATION_JSON_VALUE)));
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
+        StepVerifier.create(productInfoService.findProductsByCode(PRODUCT_CODE))
+                .verifyComplete();
+        verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE)));
+    }
+
+    @Test
+    void findOrdersByPhone_request_timeout() {
+        stubFor(get(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE))
+                .willReturn(aResponse()
+                        .withFixedDelay((int) productInfoServiceTimeout + 1000)
+                        .withStatus(OK.value())
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                        .withBody("""
+                                [{"productId":"111","productCode":"1234","productName":"Name1","score":2},
+                                 {"productId":"222","productCode":"1234","productName":"Name2","score":5}]
+                                """.stripIndent())));
         StepVerifier.create(productInfoService.findProductsByCode(PRODUCT_CODE))
                 .verifyComplete();
         verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE)));

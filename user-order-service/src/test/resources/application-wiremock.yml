@@ -1,2 +1,6 @@
-order-search-service.baseUrl: ${wiremock.server.baseUrl}/orderSearchService
-product-info-service.baseUrl: ${wiremock.server.baseUrl}/productInfoService
+order-search-service:
+  timeout: 500
+  baseUrl: ${wiremock.server.baseUrl}/orderSearchService
+product-info-service:
+  timeout: 500
+  baseUrl: ${wiremock.server.baseUrl}/productInfoService
