@@ -30,3 +30,4 @@ jobs:
 
       - name: Run Tests with Gradle
         run: ./gradlew test
+        working-directory: user-order-service
