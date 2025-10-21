@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import static com.griddynamics.gridu.pbazhko.util.MdcHelper.withMdcFromContext;
 import static org.springframework.http.MediaType.APPLICATION_NDJSON_VALUE;
 
 @RestController
@@ -19,11 +20,11 @@ public class UserInfoController {
 
     @GetMapping(value = "/users", produces = APPLICATION_NDJSON_VALUE)
     public Flux<UserInfoDto> findAllUsers() {
-        return userInfoService.findAllUsers().log();
+        return withMdcFromContext(userInfoService.findAllUsers().log());
     }
 
     @GetMapping("/users/{id}")
     public Mono<UserInfoDto> findUserById(@PathVariable("id") String id) {
-        return userInfoService.findUserById(id).log();
+        return withMdcFromContext(userInfoService.findUserById(id).log());
     }
 }

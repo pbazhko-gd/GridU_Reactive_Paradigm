@@ -35,6 +35,7 @@ public class UserOrdersService {
 
     private Mono<UserOrderDto> findProductsAndMapToUserOrderDto(UserInfoDto userInfo, OrderDto order) {
         return productInfoService.findTheMostRelevantProductByCode(order.getProductCode())
-                .map(product -> userOrderMapper.toDto(userInfo, order, product));
+                .map(product -> userOrderMapper.toDto(userInfo, order, product))
+                .switchIfEmpty(Mono.just(userOrderMapper.toDto(userInfo, order, null)));
     }
 }

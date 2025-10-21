@@ -8,12 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserOrderDto {
-    private String userId;
-    private String userName;
-    private String userPhone;
     private String orderNumber;
-    private String productId;
+    private String userName;
+    private String phoneNumber;
     private String productCode;
     private String productName;
-    private double productScore;
+    private String productId;
 }

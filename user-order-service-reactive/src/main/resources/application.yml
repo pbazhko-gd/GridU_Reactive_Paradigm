@@ -5,3 +5,9 @@ order-search-service:
 product-info-service:
   baseUrl: http://localhost:8082/productInfoService
   timeout: 5000
+
+logging:
+  level:
+    root: INFO
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%X{requestId}] %-5level %logger{36} - %msg%n"
