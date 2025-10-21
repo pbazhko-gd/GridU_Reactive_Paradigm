@@ -40,4 +40,7 @@ tasks.withType(JavaCompile).configureEach {
 
 test {
     useJUnitPlatform()
+    reports {
+        html.required.set(true)       // Generate HTML reports
+    }
 }

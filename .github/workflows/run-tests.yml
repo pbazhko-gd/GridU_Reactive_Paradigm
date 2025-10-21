@@ -31,3 +31,9 @@ jobs:
       - name: Run Tests with Gradle
         run: ./gradlew test
         working-directory: user-order-service
+
+      - name: Upload test report artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: junit-test-report
+          path: build/reports/tests/test/
