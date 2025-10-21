@@ -2,7 +2,8 @@ name: Run JUnit Tests (Gradle)
 
 on:
   pull_request:
-    branches: [ * ]
+    branches:
+      - '**'
 
 jobs:
   build:
