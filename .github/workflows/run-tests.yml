@@ -31,8 +31,3 @@ jobs:
       - name: Run Tests with Gradle
         run: ./gradlew test
         working-directory: user-order-service
-
-      - name: Upload HTML report to GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: user-order-service/build/reports/tests/test/
