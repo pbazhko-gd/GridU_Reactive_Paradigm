@@ -10,6 +10,8 @@ import reactor.core.publisher.Flux;
 
 import java.time.Duration;
 
+import static com.griddynamics.gridu.pbazhko.util.MdcHelper.applyContextForMdc;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -33,6 +35,7 @@ public class OrderSearchService {
                     log.error("Cannot retrieve orders by the phone {}: {}", phoneNumber, throwable.getMessage());
                     return Flux.empty();
                 })
+                .transform(applyContextForMdc())
                 .doOnNext(order -> log.info("Found order {} for phoneNumber '{}'", order, phoneNumber))
                 .log();
     }
