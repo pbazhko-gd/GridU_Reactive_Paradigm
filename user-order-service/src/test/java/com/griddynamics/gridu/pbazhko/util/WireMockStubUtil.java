@@ -1,5 +1,6 @@
 package com.griddynamics.gridu.pbazhko.util;
 
+import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpStatus;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -7,6 +8,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_NDJSON_VALUE;
 
+@UtilityClass
 public class WireMockStubUtil {
 
     public static void configureEmptyResponseBody(String phone) {

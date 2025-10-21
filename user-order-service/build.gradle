@@ -30,6 +30,8 @@ dependencies {
     implementation 'org.wiremock.integrations:wiremock-spring-boot:3.10.0'
     testImplementation "org.testcontainers:mongodb"
     testImplementation "org.junit.jupiter:junit-jupiter"
+    testCompileOnly "org.projectlombok:lombok"
+    testAnnotationProcessor "org.projectlombok:lombok"
 }
 
 tasks.withType(JavaCompile).configureEach {
