@@ -55,16 +55,16 @@ class UserInfoServiceTest {
     }
 
     @Test
-    void findUserByPhone_user_not_exists() {
+    void findUserById_user_not_exists() {
         userInfoRepository.save(USER_2).block();
-        StepVerifier.create(userInfoService.findUserByPhone(USER_1.getPhone()))
+        StepVerifier.create(userInfoService.findUserById(USER_1.getId()))
                 .verifyComplete();
     }
 
     @Test
-    void findUserByPhone_user_exists() {
+    void findUserById_user_exists() {
         userInfoRepository.save(USER_1).block();
-        StepVerifier.create(userInfoService.findUserByPhone(USER_1.getPhone()))
+        StepVerifier.create(userInfoService.findUserById(USER_1.getId()))
                 .assertNext(dto -> {
                     assertEquals(USER_1.getId(), dto.getId());
                     assertEquals(USER_1.getName(), dto.getName());

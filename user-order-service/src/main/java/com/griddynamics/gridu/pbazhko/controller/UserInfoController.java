@@ -24,9 +24,9 @@ public class UserInfoController {
         return userInfoService.findAllUsers().log();
     }
 
-    @GetMapping("/users/{phone}")
-    public Mono<UserInfoDto> findUserByPhone(@PathVariable("phone") String phone) {
-        return userInfoService.findUserByPhone(phone)
+    @GetMapping("/users/{id}")
+    public Mono<UserInfoDto> findUserById(@PathVariable("id") String id) {
+        return userInfoService.findUserById(id)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
                 .log();
     }

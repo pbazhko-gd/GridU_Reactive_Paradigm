@@ -21,8 +21,8 @@ public class UserInfoService {
                 .log();
     }
 
-    public Mono<UserInfoDto> findUserByPhone(String phone) {
-        return userInfoRepository.findByPhone(phone)
+    public Mono<UserInfoDto> findUserById(String id) {
+        return userInfoRepository.findById(id)
                 .map(userInfoMapper::toDto)
                 .log();
     }

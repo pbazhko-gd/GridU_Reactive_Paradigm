@@ -64,16 +64,16 @@ class UserInfoControllerTest {
     }
 
     @Test
-    void findUserByPhone_user_not_exists() {
+    void findUserById_user_not_exists() {
         userInfoRepository.save(USER_2).block();
-        webClient.get().uri("/users/{phone}", USER_1.getPhone()).exchange()
+        webClient.get().uri("/users/{id}", USER_1.getId()).exchange()
                 .expectStatus().isNotFound();
     }
 
     @Test
-    void findUserByPhone_user_exists() {
+    void findUserById_user_exists() {
         userInfoRepository.save(USER_1).block();
-        webClient.get().uri("/users/{phone}", USER_1.getPhone()).exchange()
+        webClient.get().uri("/users/{id}", USER_1.getId()).exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentTypeCompatibleWith(APPLICATION_JSON)
                 .expectBody(UserInfoDto.class)

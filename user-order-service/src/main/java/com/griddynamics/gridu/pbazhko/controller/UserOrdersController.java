@@ -1,7 +1,7 @@
 package com.griddynamics.gridu.pbazhko.controller;
 
-import com.griddynamics.gridu.pbazhko.dto.OrderDto;
-import com.griddynamics.gridu.pbazhko.service.OrderSearchService;
+import com.griddynamics.gridu.pbazhko.dto.UserOrderDto;
+import com.griddynamics.gridu.pbazhko.service.UserOrdersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +16,10 @@ import static org.springframework.http.MediaType.APPLICATION_NDJSON_VALUE;
 @RequiredArgsConstructor
 public class UserOrdersController {
 
-    private final OrderSearchService orderSearchService;
+    private final UserOrdersService userOrdersService;
 
-    @GetMapping(value = "/users/{phone}/orders", produces = APPLICATION_NDJSON_VALUE)
-    public Flux<OrderDto> findOrdersByPhone(@PathVariable("phone") String phone) {
-        return orderSearchService.findOrdersByPhone(phone).log();
+    @GetMapping(value = "/users/{id}/orders", produces = APPLICATION_NDJSON_VALUE)
+    public Flux<UserOrderDto> findOrdersByPhone(@PathVariable("id") String id) {
+        return userOrdersService.findOrdersByUserId(id).log();
     }
 }
