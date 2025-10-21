@@ -18,8 +18,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @ActiveProfiles("wiremock")
@@ -37,19 +36,39 @@ class ProductInfoServiceTest {
     private static final String PRODUCT_CODE = "1234";
 
     @Test
-    void findProductsByCode_no_products() {
+    void findTheMostRelevantProductByCode_no_products() {
         stubFor(get(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE))
                 .willReturn(aResponse()
                         .withStatus(OK.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBody("[]")));
-        StepVerifier.create(productInfoService.findProductsByCode(PRODUCT_CODE))
+        StepVerifier.create(productInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
                 .verifyComplete();
         verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE)));
     }
 
     @Test
-    void findProductsByCode_two_products() {
+    void findTheMostRelevantProductByCode_one_product() {
+        stubFor(get(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE))
+                .willReturn(aResponse()
+                        .withStatus(OK.value())
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                        .withBody("""
+                                [{"productId":"111","productCode":"1234","productName":"Name1","score":2}]
+                                """.stripIndent())));
+        StepVerifier.create(productInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
+                .assertNext(dto -> {
+                    assertEquals("111", dto.getProductId());
+                    assertEquals("1234", dto.getProductCode());
+                    assertEquals("Name1", dto.getProductName());
+                    assertEquals(2, dto.getScore());
+                })
+                .verifyComplete();
+        verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE)));
+    }
+
+    @Test
+    void findTheMostRelevantProductByCode_two_products() {
         stubFor(get(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE))
                 .willReturn(aResponse()
                         .withStatus(OK.value())
@@ -58,13 +77,7 @@ class ProductInfoServiceTest {
                                 [{"productId":"111","productCode":"1234","productName":"Name1","score":2},
                                  {"productId":"222","productCode":"1234","productName":"Name2","score":5}]
                                 """.stripIndent())));
-        StepVerifier.create(productInfoService.findProductsByCode(PRODUCT_CODE))
-                .assertNext(dto -> {
-                    assertEquals("111", dto.getProductId());
-                    assertEquals("1234", dto.getProductCode());
-                    assertEquals("Name1", dto.getProductName());
-                    assertEquals(2, dto.getScore());
-                })
+        StepVerifier.create(productInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
                 .assertNext(dto -> {
                     assertEquals("222", dto.getProductId());
                     assertEquals("1234", dto.getProductCode());
@@ -76,18 +89,29 @@ class ProductInfoServiceTest {
     }
 
     @Test
-    void findProductsByCode_service_unavailable() {
+    void findTheMostRelevantProductByCode_code_not_found() {
         stubFor(get(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE))
                 .willReturn(aResponse()
-                        .withStatus(SERVICE_UNAVAILABLE.value())
+                        .withStatus(NOT_FOUND.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
-        StepVerifier.create(productInfoService.findProductsByCode(PRODUCT_CODE))
+        StepVerifier.create(productInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
                 .verifyComplete();
         verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE)));
     }
 
     @Test
-    void findOrdersByPhone_request_timeout() {
+    void findTheMostRelevantProductByCode_service_unavailable() {
+        stubFor(get(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE))
+                .willReturn(aResponse()
+                        .withStatus(SERVICE_UNAVAILABLE.value())
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
+        StepVerifier.create(productInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
+                .verifyComplete();
+        verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE)));
+    }
+
+    @Test
+    void findTheMostRelevantProductByCode_request_timeout() {
         stubFor(get(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE))
                 .willReturn(aResponse()
                         .withFixedDelay((int) productInfoServiceTimeout + 1000)
@@ -97,7 +121,7 @@ class ProductInfoServiceTest {
                                 [{"productId":"111","productCode":"1234","productName":"Name1","score":2},
                                  {"productId":"222","productCode":"1234","productName":"Name2","score":5}]
                                 """.stripIndent())));
-        StepVerifier.create(productInfoService.findProductsByCode(PRODUCT_CODE))
+        StepVerifier.create(productInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
                 .verifyComplete();
         verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE)));
     }

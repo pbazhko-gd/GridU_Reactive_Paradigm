@@ -1,6 +1,7 @@
 package com.griddynamics.gridu.pbazhko.service;
 
 import com.griddynamics.gridu.pbazhko.config.MongoDBTestContainerConfig;
+import com.griddynamics.gridu.pbazhko.exception.UserNotFoundException;
 import com.griddynamics.gridu.pbazhko.model.UserInfo;
 import com.griddynamics.gridu.pbazhko.repository.UserInfoRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +59,7 @@ class UserInfoServiceTest {
     void findUserById_user_not_exists() {
         userInfoRepository.save(USER_2).block();
         StepVerifier.create(userInfoService.findUserById(USER_1.getId()))
-                .verifyComplete();
+                .verifyError(UserNotFoundException.class);
     }
 
     @Test

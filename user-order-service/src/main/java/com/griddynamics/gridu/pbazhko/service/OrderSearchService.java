@@ -33,7 +33,7 @@ public class OrderSearchService {
                     log.error("Cannot retrieve orders by the phone {}: {}", phoneNumber, throwable.getMessage());
                     return Flux.empty();
                 })
-                .doOnNext(order -> log.info("Retrieve order {} for phoneNumber {}", order, phoneNumber))
+                .doOnNext(order -> log.info("Found order {} for phoneNumber '{}'", order, phoneNumber))
                 .log();
     }
 }
