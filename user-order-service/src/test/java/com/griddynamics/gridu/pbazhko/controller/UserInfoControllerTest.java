@@ -15,6 +15,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_NDJSON_VALUE;
 
 @SpringBootTest
 @AutoConfigureWebTestClient
@@ -22,10 +24,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class UserInfoControllerTest {
 
     @Autowired
-    private UserInfoRepository userInfoRepository;
+    private WebTestClient webClient;
 
     @Autowired
-    private WebTestClient webClient;
+    private UserInfoRepository userInfoRepository;
 
     private final static UserInfo USER_1 = new UserInfo("1", "User 1", "123");
     private final static UserInfo USER_2 = new UserInfo("2", "User 2", "456");
@@ -46,9 +48,9 @@ class UserInfoControllerTest {
     void findAllUsers_two_users_exist() {
         userInfoRepository.save(USER_1).block();
         userInfoRepository.save(USER_2).block();
-
         webClient.get().uri("/users").exchange()
                 .expectStatus().isOk()
+                .expectHeader().contentTypeCompatibleWith(APPLICATION_NDJSON_VALUE)
                 .expectBodyList(UserInfoDto.class)
                 .value(dtos -> {
                     assertThat(dtos).hasSize(2);
@@ -73,6 +75,7 @@ class UserInfoControllerTest {
         userInfoRepository.save(USER_1).block();
         webClient.get().uri("/users/{phone}", USER_1.getPhone()).exchange()
                 .expectStatus().isOk()
+                .expectHeader().contentTypeCompatibleWith(APPLICATION_JSON)
                 .expectBody(UserInfoDto.class)
                 .value(dto -> {
                     assertThat(dto.getId()).isEqualTo(USER_1.getId());

@@ -11,13 +11,15 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import static org.springframework.http.MediaType.APPLICATION_NDJSON_VALUE;
+
 @RestController
 @RequiredArgsConstructor
 public class UserInfoController {
 
     private final UserInfoService userInfoService;
 
-    @GetMapping("/users")
+    @GetMapping(value = "/users", produces = APPLICATION_NDJSON_VALUE)
     public Flux<UserInfoDto> findAllUsers() {
         return userInfoService.findAllUsers().log();
     }

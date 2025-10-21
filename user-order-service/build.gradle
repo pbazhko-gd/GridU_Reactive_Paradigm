@@ -27,6 +27,7 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation "io.projectreactor:reactor-test"
+    implementation 'org.wiremock.integrations:wiremock-spring-boot:3.10.0'
     testImplementation "org.testcontainers:mongodb"
     testImplementation "org.junit.jupiter:junit-jupiter"
 }

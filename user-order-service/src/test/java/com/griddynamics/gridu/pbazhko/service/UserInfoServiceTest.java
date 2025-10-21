@@ -33,7 +33,7 @@ class UserInfoServiceTest {
     @Test
     void findAllUsers_no_users_exist() {
         StepVerifier.create(userInfoService.findAllUsers())
-                .expectComplete();
+                .verifyComplete();
     }
 
     @Test
@@ -51,7 +51,7 @@ class UserInfoServiceTest {
                     assertEquals(USER_2.getName(), dto.getName());
                     assertEquals(USER_2.getPhone(), dto.getPhone());
                 })
-                .expectComplete();
+                .verifyComplete();
     }
 
     @Test

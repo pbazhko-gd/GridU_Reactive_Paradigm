@@ -9,14 +9,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
+import static org.springframework.http.MediaType.APPLICATION_NDJSON_VALUE;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class OrderSearchController {
+public class UserOrdersController {
 
     private final OrderSearchService orderSearchService;
 
-    @GetMapping("/users/{phone}/orders")
+    @GetMapping(value = "/users/{phone}/orders", produces = APPLICATION_NDJSON_VALUE)
     public Flux<OrderDto> findOrdersByPhone(@PathVariable("phone") String phone) {
         return orderSearchService.findOrdersByPhone(phone).log();
     }

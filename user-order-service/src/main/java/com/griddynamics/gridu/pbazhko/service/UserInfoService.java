@@ -17,7 +17,6 @@ public class UserInfoService {
 
     public Flux<UserInfoDto> findAllUsers() {
         return userInfoRepository.findAll()
-                .log()
                 .map(userInfoMapper::toDto)
                 .log();
     }

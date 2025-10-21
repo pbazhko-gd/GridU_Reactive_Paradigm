@@ -16,10 +16,13 @@ public class MongoDBTestContainerConfig {
                     .waitingFor(Wait.forListeningPort());
 
     static {
-        mongoDBContainer.start();
+        if (!mongoDBContainer.isRunning()) {
+            mongoDBContainer.start();
+        }
     }
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
             TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
