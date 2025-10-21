@@ -18,8 +18,13 @@ public class UserOrdersController {
 
     private final UserOrdersService userOrdersService;
 
+    @GetMapping(value = "/users/orders", produces = APPLICATION_NDJSON_VALUE)
+    public Flux<UserOrderDto> findAllUserOrders() {
+        return userOrdersService.findAllUserOrders().log();
+    }
+
     @GetMapping(value = "/users/{id}/orders", produces = APPLICATION_NDJSON_VALUE)
-    public Flux<UserOrderDto> findOrdersByPhone(@PathVariable("id") String id) {
+    public Flux<UserOrderDto> findOrdersByUserId(@PathVariable("id") String id) {
         return userOrdersService.findOrdersByUserId(id).log();
     }
 }

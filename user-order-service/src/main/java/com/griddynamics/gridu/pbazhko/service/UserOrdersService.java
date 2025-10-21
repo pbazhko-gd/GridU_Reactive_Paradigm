@@ -18,6 +18,11 @@ public class UserOrdersService {
     private final ProductInfoService productInfoService;
     private final UserOrderMapper userOrderMapper;
 
+    public Flux<UserOrderDto> findAllUserOrders() {
+        return userInfoService.findAllUsers()
+                .flatMap(this::findOrdersByUserPhone);
+    }
+
     public Flux<UserOrderDto> findOrdersByUserId(String userId) {
         return userInfoService.findUserById(userId)
                 .flatMapMany(this::findOrdersByUserPhone);
