@@ -33,6 +33,7 @@ public class ProductInfoService {
                     log.error("Cannot retrieve products by the code {}: {}", productCode, throwable.getMessage());
                     return Flux.empty();
                 })
+                .doOnNext(product -> log.info("Retrieve product info {} for code {}", product, productCode))
                 .log();
     }
 }

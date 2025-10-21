@@ -52,8 +52,7 @@ class OrderSearchServiceTest {
                         .withBody("""
                                     {"phoneNumber":"123456789", "orderNumber": "111", "productCode": "5678"} \n
                                     {"phoneNumber":"123456789", "orderNumber": "222", "productCode": "7890"}
-                                """.stripIndent())
-                        .withChunkedDribbleDelay(2, 500)));
+                                """.stripIndent())));
         StepVerifier.create(orderSearchService.findOrdersByPhone(PHONE))
                 .assertNext(dto -> {
                     assertEquals("123456789", dto.getPhoneNumber());
