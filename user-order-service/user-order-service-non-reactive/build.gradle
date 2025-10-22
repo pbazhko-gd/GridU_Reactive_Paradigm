@@ -1,0 +1,14 @@
+plugins {
+    id 'org.springframework.boot' version '3.5.6'
+}
+
+dependencies {
+    implementation(project(":user-order-service-common"))
+}
+
+test {
+    useJUnitPlatform()
+    reports {
+        html.required.set(true)       // Generate HTML reports
+    }
+}
