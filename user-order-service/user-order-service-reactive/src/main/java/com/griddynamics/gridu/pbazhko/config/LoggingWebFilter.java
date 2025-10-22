@@ -20,14 +20,14 @@ public class LoggingWebFilter implements WebFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         return chain.filter(exchange)
-                .contextWrite(Context.of(REQUEST_ID_MDC_KEY, getRequestId(exchange)));
+            .contextWrite(Context.of(REQUEST_ID_MDC_KEY, getRequestId(exchange)));
     }
 
     private String getRequestId(ServerWebExchange exchange) {
         return Optional.ofNullable(
-                exchange.getRequest()
-                        .getHeaders()
-                        .getFirst(REQUEST_ID_HEADER)
+            exchange.getRequest()
+                .getHeaders()
+                .getFirst(REQUEST_ID_HEADER)
         ).orElse(UUID.randomUUID().toString());
     }
 }

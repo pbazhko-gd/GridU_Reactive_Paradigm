@@ -11,14 +11,14 @@ public class WebClientConfig {
     @Bean
     public WebClient orderSearchWebClient(@Value("${order-search-service.baseUrl}") String baseUrl) {
         return WebClient.builder()
-                .baseUrl(baseUrl)
-                .build();
+            .baseUrl(baseUrl)
+            .build();
     }
 
     @Bean
     public WebClient productInfoWebClient(@Value("${product-info-service.baseUrl}") String baseUrl) {
         return WebClient.builder()
-                .baseUrl(baseUrl)
-                .build();
+            .baseUrl(baseUrl)
+            .build();
     }
 }

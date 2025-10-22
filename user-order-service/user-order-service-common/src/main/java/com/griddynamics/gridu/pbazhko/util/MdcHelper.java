@@ -15,27 +15,27 @@ public class MdcHelper {
 
     public static <T> Function<Flux<T>, Flux<T>> useMdcForFlux() {
         return publisher -> Flux.from(publisher)
-                .doOnEach(signal -> {
-                    if (signal.isOnNext() || signal.isOnComplete() || signal.isOnError()) {
-                        ContextView ctx = signal.getContextView();
-                        applyMdc(ctx);
-                    }
-                })
-                .doFinally(sig -> MDC.clear());
+            .doOnEach(signal -> {
+                if (signal.isOnNext() || signal.isOnComplete() || signal.isOnError()) {
+                    ContextView ctx = signal.getContextView();
+                    applyMdc(ctx);
+                }
+            })
+            .doFinally(sig -> MDC.clear());
     }
 
     public static <T> Function<Mono<T>, Mono<T>> useMdcForMono() {
         return publisher -> Mono.from(publisher)
-                .doOnEach(signal -> {
-                    if (signal.isOnNext() || signal.isOnComplete() || signal.isOnError()) {
-                        ContextView ctx = signal.getContextView();
-                        applyMdc(ctx);
-                    }
-                })
-                .doFinally(sig -> MDC.clear());
+            .doOnEach(signal -> {
+                if (signal.isOnNext() || signal.isOnComplete() || signal.isOnError()) {
+                    ContextView ctx = signal.getContextView();
+                    applyMdc(ctx);
+                }
+            })
+            .doFinally(sig -> MDC.clear());
     }
 
-    public static <T> Function<Throwable, Flux<T>> withMdcFlux(Function<Throwable, Flux<T>> handler) {
+    public static <T> Function<Throwable, Flux<T>> onErrorResumeWithMdcFlux(Function<Throwable, Flux<T>> handler) {
         return ex -> Flux.deferContextual(ctx -> {
             applyMdc(ctx);
             return handler.apply(ex).doFinally(sig -> MDC.clear());

@@ -13,12 +13,12 @@ import java.time.Duration;
 import java.util.function.BiFunction;
 
 import static com.griddynamics.gridu.pbazhko.util.MdcHelper.useMdcForFlux;
-import static com.griddynamics.gridu.pbazhko.util.MdcHelper.withMdcFlux;
+import static com.griddynamics.gridu.pbazhko.util.MdcHelper.onErrorResumeWithMdcFlux;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ReactiveProductInfoService implements ProductInfoService {
+public class ReactiveProductInfoService implements ProductInfoService<Mono<ProductDto>> {
 
     private final WebClient productInfoWebClient;
 
@@ -28,22 +28,22 @@ public class ReactiveProductInfoService implements ProductInfoService {
     @Override
     public Mono<ProductDto> findTheMostRelevantProductByCode(String productCode) {
         return productInfoWebClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/product/names")
-                        .queryParam("productCode", productCode)
-                        .build()
-                ).retrieve()
-                .bodyToFlux(ProductDto.class)
-                .timeout(Duration.ofMillis(productInfoServiceTimeout))
-                .transform(useMdcForFlux())
-                .doOnNext(product -> log.info("Found product info {} for code {}", product, productCode))
-                .onErrorResume(withMdcFlux(ex -> {
-                    log.error("Cannot retrieve products by the code {}: {}", productCode, ex.getMessage());
-                    return Flux.empty();
-                }))
-                .reduce(chooseTheMostRelevantProduct())
-                .doOnNext(product -> log.info("Detect the most relevant product with the highest score: {}", product))
-                .log();
+            .uri(uriBuilder -> uriBuilder
+                .path("/product/names")
+                .queryParam("productCode", productCode)
+                .build()
+            ).retrieve()
+            .bodyToFlux(ProductDto.class)
+            .timeout(Duration.ofMillis(productInfoServiceTimeout))
+            .transform(useMdcForFlux())
+            .doOnNext(product -> log.info("Found product info {} for code {}", product, productCode))
+            .onErrorResume(onErrorResumeWithMdcFlux(ex -> {
+                log.error("Cannot retrieve products by the code {}: {}", productCode, ex.getMessage());
+                return Flux.empty();
+            }))
+            .reduce(chooseTheMostRelevantProduct())
+            .doOnNext(product -> log.info("Detect the most relevant product with the highest score: {}", product))
+            .log();
     }
 
     private static BiFunction<ProductDto, ProductDto, ProductDto> chooseTheMostRelevantProduct() {

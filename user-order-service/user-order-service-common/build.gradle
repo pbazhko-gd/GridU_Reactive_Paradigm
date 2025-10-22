@@ -1,26 +1,21 @@
 plugins {
-    id 'java-library'
+    id "java-library"
 }
 
 dependencies {
-    api "org.springframework.boot:spring-boot-starter-webflux"
+    api "org.springframework:spring-webflux"
+
+    api "org.springframework.boot:spring-boot-starter-data-mongodb"
     api "org.springframework.boot:spring-boot-starter-data-mongodb-reactive"
 
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor "org.projectlombok:lombok"
+    compileOnly "org.projectlombok:lombok"
 
-    compileOnly 'org.mapstruct:mapstruct:1.6.3'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
 
-    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.6.3"
+    compileOnly "org.mapstruct:mapstruct:1.6.3"
 
-    testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor "org.projectlombok:lombok"
-}
-
-test {
-    useJUnitPlatform()
-    reports {
-        html.required.set(true)       // Generate HTML reports
-    }
+    testCompileOnly "org.projectlombok:lombok"
 }

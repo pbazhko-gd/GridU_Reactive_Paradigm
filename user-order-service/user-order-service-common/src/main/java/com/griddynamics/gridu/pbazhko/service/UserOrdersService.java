@@ -1,11 +1,8 @@
 package com.griddynamics.gridu.pbazhko.service;
 
-import com.griddynamics.gridu.pbazhko.dto.UserOrderDto;
-import reactor.core.publisher.Flux;
+public interface UserOrdersService<T> {
 
-public interface UserOrdersService {
+    T findAllUserOrders();
 
-    Flux<UserOrderDto> findAllUserOrders();
-
-    Flux<UserOrderDto> findOrdersByUserId(String userId);
+    T findOrdersByUserId(String userId);
 }

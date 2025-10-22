@@ -12,8 +12,8 @@ public class MongoDBTestContainerConfig {
     private static final String IMAGE = "mongo:6.0.13";
 
     private static final MongoDBContainer mongoDBContainer =
-            new MongoDBContainer(DockerImageName.parse(IMAGE))
-                    .waitingFor(Wait.forListeningPort());
+        new MongoDBContainer(DockerImageName.parse(IMAGE))
+            .waitingFor(Wait.forListeningPort());
 
     static {
         if (!mongoDBContainer.isRunning()) {
@@ -26,8 +26,8 @@ public class MongoDBTestContainerConfig {
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
             TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
-                    configurableApplicationContext,
-                    "spring.data.mongodb.uri=" + mongoDBContainer.getReplicaSetUrl()
+                configurableApplicationContext,
+                "spring.data.mongodb.uri=" + mongoDBContainer.getReplicaSetUrl()
             );
         }
     }

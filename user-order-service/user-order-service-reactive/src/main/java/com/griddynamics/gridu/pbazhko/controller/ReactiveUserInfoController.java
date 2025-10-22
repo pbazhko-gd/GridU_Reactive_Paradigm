@@ -1,7 +1,7 @@
 package com.griddynamics.gridu.pbazhko.controller;
 
 import com.griddynamics.gridu.pbazhko.dto.UserInfoDto;
-import com.griddynamics.gridu.pbazhko.service.impl.UserInfoService;
+import com.griddynamics.gridu.pbazhko.service.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,9 +13,9 @@ import static org.springframework.http.MediaType.APPLICATION_NDJSON_VALUE;
 
 @RestController
 @RequiredArgsConstructor
-public class UserInfoController {
+public class ReactiveUserInfoController {
 
-    private final UserInfoService userInfoService;
+    private final UserInfoService<Flux<UserInfoDto>, Mono<UserInfoDto>> userInfoService;
 
     @GetMapping(value = "/users", produces = APPLICATION_NDJSON_VALUE)
     public Flux<UserInfoDto> findAllUsers() {
