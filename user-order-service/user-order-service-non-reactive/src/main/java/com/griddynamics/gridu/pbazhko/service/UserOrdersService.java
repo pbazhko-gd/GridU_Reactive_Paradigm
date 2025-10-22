@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -21,22 +22,31 @@ public class UserOrdersService {
 
     public List<UserOrderDto> findAllUserOrders() {
         return userInfoService.findAllUsers().stream()
-            .map(this::findOrdersByUserPhone)
+            .map(this::findOrdersForUser)
             .flatMap(Collection::stream)
             .toList();
     }
 
     public List<UserOrderDto> findOrdersByUserId(String userId) {
-        return findOrdersByUserPhone(userInfoService.findUserById(userId));
+        var user = userInfoService.findUserById(userId);
+        return findOrdersForUser(user);
     }
 
-    private List<UserOrderDto> findOrdersByUserPhone(UserInfoDto userInfo) {
-        return orderSearchService.findOrdersByPhone(userInfo.getPhone()).stream()
-            .map(order -> findProductsAndMapToUserOrderDto(userInfo, order))
+    private List<UserOrderDto> findOrdersForUser(UserInfoDto userInfo) {
+        var orders = orderSearchService.findOrdersByPhone(userInfo.getPhone());
+        var futures = orders.stream()
+            .map(order -> CompletableFuture.supplyAsync(() -> getUserOrder(userInfo, order)))
             .toList();
+
+        var allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+
+        return allOf.thenApply(v -> futures.stream()
+            .map(CompletableFuture::join)
+            .toList()
+        ).join();
     }
 
-    private UserOrderDto findProductsAndMapToUserOrderDto(UserInfoDto userInfo, OrderDto order) {
+    private UserOrderDto getUserOrder(UserInfoDto userInfo, OrderDto order) {
         var product = productInfoService.findTheMostRelevantProductByCode(order.getProductCode());
         return userOrderMapper.toDto(userInfo, order, product);
     }

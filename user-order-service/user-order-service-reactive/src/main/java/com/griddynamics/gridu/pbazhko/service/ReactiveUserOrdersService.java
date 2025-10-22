@@ -20,15 +20,15 @@ public class ReactiveUserOrdersService {
 
     public Flux<UserOrderDto> findAllUserOrders() {
         return reactiveUserInfoService.findAllUsers()
-            .flatMap(this::findOrdersByUserPhone);
+            .flatMap(this::findOrdersForUser);
     }
 
     public Flux<UserOrderDto> findOrdersByUserId(String userId) {
         return reactiveUserInfoService.findUserById(userId)
-            .flatMapMany(this::findOrdersByUserPhone);
+            .flatMapMany(this::findOrdersForUser);
     }
 
-    private Flux<UserOrderDto> findOrdersByUserPhone(UserInfoDto userInfo) {
+    private Flux<UserOrderDto> findOrdersForUser(UserInfoDto userInfo) {
         return reactiveOrderSearchService.findOrdersByPhone(userInfo.getPhone())
             .flatMap(order -> findProductsAndMapToUserOrderDto(userInfo, order));
     }
