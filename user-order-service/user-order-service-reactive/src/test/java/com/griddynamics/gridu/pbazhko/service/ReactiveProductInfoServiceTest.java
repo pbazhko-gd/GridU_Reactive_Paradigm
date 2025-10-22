@@ -1,6 +1,6 @@
 package com.griddynamics.gridu.pbazhko.service;
 
-import com.griddynamics.gridu.pbazhko.config.MongoDBTestContainerConfig;
+import com.griddynamics.gridu.pbazhko.tests.config.MongoDBTestContainerConfig;
 import com.griddynamics.gridu.pbazhko.dto.ProductDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +12,15 @@ import org.wiremock.spring.EnableWireMock;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.List;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static com.griddynamics.gridu.pbazhko.tests.util.TestUtils.toJson;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.*;
@@ -36,6 +39,8 @@ class ReactiveProductInfoServiceTest {
     private long productInfoServiceTimeout;
 
     private static final String PRODUCT_CODE = "1234";
+    private static final ProductDto TEST_PRODUCT_1 = new ProductDto("pr1", PRODUCT_CODE, "Prod 1", 2);
+    private static final ProductDto TEST_PRODUCT_2 = new ProductDto("pr2", PRODUCT_CODE, "Prod 2", 5);
 
     @Test
     void findTheMostRelevantProductByCode_no_products() {
@@ -55,15 +60,13 @@ class ReactiveProductInfoServiceTest {
             .willReturn(aResponse()
                 .withStatus(OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .withBody("""
-                    [{"productId":"111","productCode":"1234","productName":"Name1","score":2}]
-                    """.stripIndent())));
+                .withBody(toJson(TEST_PRODUCT_1))));
         StepVerifier.create(productInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
             .assertNext(dto -> {
-                assertEquals("111", dto.getProductId());
-                assertEquals("1234", dto.getProductCode());
-                assertEquals("Name1", dto.getProductName());
-                assertEquals(2, dto.getScore());
+                assertEquals(TEST_PRODUCT_1.getProductId(), dto.getProductId());
+                assertEquals(TEST_PRODUCT_1.getProductCode(), dto.getProductCode());
+                assertEquals(TEST_PRODUCT_1.getProductName(), dto.getProductName());
+                assertEquals(TEST_PRODUCT_1.getScore(), dto.getScore());
             })
             .verifyComplete();
         verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE)));
@@ -75,16 +78,13 @@ class ReactiveProductInfoServiceTest {
             .willReturn(aResponse()
                 .withStatus(OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .withBody("""
-                    [{"productId":"111","productCode":"1234","productName":"Name1","score":2},
-                     {"productId":"222","productCode":"1234","productName":"Name2","score":5}]
-                    """.stripIndent())));
+                .withBody(toJson(List.of(TEST_PRODUCT_1, TEST_PRODUCT_2)))));
         StepVerifier.create(productInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
             .assertNext(dto -> {
-                assertEquals("222", dto.getProductId());
-                assertEquals("1234", dto.getProductCode());
-                assertEquals("Name2", dto.getProductName());
-                assertEquals(5, dto.getScore());
+                assertEquals(TEST_PRODUCT_2.getProductId(), dto.getProductId());
+                assertEquals(TEST_PRODUCT_2.getProductCode(), dto.getProductCode());
+                assertEquals(TEST_PRODUCT_2.getProductName(), dto.getProductName());
+                assertEquals(TEST_PRODUCT_2.getScore(), dto.getScore());
             })
             .verifyComplete();
         verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE)));
@@ -119,10 +119,7 @@ class ReactiveProductInfoServiceTest {
                 .withFixedDelay((int) productInfoServiceTimeout + 1000)
                 .withStatus(OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .withBody("""
-                    [{"productId":"111","productCode":"1234","productName":"Name1","score":2},
-                     {"productId":"222","productCode":"1234","productName":"Name2","score":5}]
-                    """.stripIndent())));
+                .withBody(toJson(List.of(TEST_PRODUCT_1, TEST_PRODUCT_2)))));
         StepVerifier.create(productInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
             .verifyComplete();
         verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE)));

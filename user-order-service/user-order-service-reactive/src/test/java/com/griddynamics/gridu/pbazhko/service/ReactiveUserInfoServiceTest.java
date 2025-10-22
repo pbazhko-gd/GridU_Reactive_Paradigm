@@ -1,6 +1,5 @@
 package com.griddynamics.gridu.pbazhko.service;
 
-import com.griddynamics.gridu.pbazhko.dto.UserInfoDto;
 import com.griddynamics.gridu.pbazhko.exception.UserNotFoundException;
 import com.griddynamics.gridu.pbazhko.mapper.UserInfoMapper;
 import com.griddynamics.gridu.pbazhko.mapper.UserInfoMapperImpl;
@@ -29,10 +28,10 @@ class ReactiveUserInfoServiceTest {
     private UserInfoMapper userInfoMapper = new UserInfoMapperImpl();
 
     @InjectMocks
-    private UserInfoService<Flux<UserInfoDto>, Mono<UserInfoDto>> userInfoService;
+    private ReactiveUserInfoService userInfoService;
 
-    private final static UserInfo USER_1 = new UserInfo("1", "User 1", "123");
-    private final static UserInfo USER_2 = new UserInfo("2", "User 2", "456");
+    private static final UserInfo USER_1 = new UserInfo("1", "User 1", "123");
+    private static final UserInfo USER_2 = new UserInfo("2", "User 2", "456");
 
     @Test
     void findAllUsers_no_users_exist() {

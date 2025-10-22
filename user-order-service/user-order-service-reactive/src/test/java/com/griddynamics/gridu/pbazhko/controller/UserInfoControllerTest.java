@@ -1,6 +1,6 @@
 package com.griddynamics.gridu.pbazhko.controller;
 
-import com.griddynamics.gridu.pbazhko.config.MongoDBTestContainerConfig;
+import com.griddynamics.gridu.pbazhko.tests.config.MongoDBTestContainerConfig;
 import com.griddynamics.gridu.pbazhko.dto.UserInfoDto;
 import com.griddynamics.gridu.pbazhko.model.UserInfo;
 import com.griddynamics.gridu.pbazhko.repository.ReactiveUserInfoRepository;
@@ -29,8 +29,8 @@ class UserInfoControllerTest {
     @Autowired
     private ReactiveUserInfoRepository userInfoRepository;
 
-    private final static UserInfo USER_1 = new UserInfo("1", "User 1", "123");
-    private final static UserInfo USER_2 = new UserInfo("2", "User 2", "456");
+    private static final UserInfo USER_1 = new UserInfo("1", "User 1", "123");
+    private static final UserInfo USER_2 = new UserInfo("2", "User 2", "456");
 
     @BeforeEach
     void setup() {

@@ -1,14 +1,13 @@
 package com.griddynamics.gridu.pbazhko.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.griddynamics.gridu.pbazhko.config.MongoDBTestContainerConfig;
+import com.griddynamics.gridu.pbazhko.tests.config.MongoDBTestContainerConfig;
 import com.griddynamics.gridu.pbazhko.dto.OrderDto;
 import com.griddynamics.gridu.pbazhko.dto.ProductDto;
 import com.griddynamics.gridu.pbazhko.dto.UserInfoDto;
 import com.griddynamics.gridu.pbazhko.dto.UserOrderDto;
 import com.griddynamics.gridu.pbazhko.model.UserInfo;
 import com.griddynamics.gridu.pbazhko.repository.ReactiveUserInfoRepository;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import org.wiremock.spring.EnableWireMock;
 import java.util.Collections;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.griddynamics.gridu.pbazhko.tests.util.TestUtils.toJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.OK;
@@ -45,15 +45,15 @@ class UserOrdersControllerTest {
     @Autowired
     private ReactiveUserInfoRepository userInfoRepository;
 
-    private final static UserInfo TEST_USER = new UserInfo("1", "User 1", "123");
+    private static final UserInfo TEST_USER = new UserInfo("1", "User 1", "123");
 
-    private final static OrderDto TEST_ORDER_1 = new OrderDto(TEST_USER.getPhone(), "111", "5678");
-    private final static OrderDto TEST_ORDER_2 = new OrderDto(TEST_USER.getPhone(), "222", "7890");
+    private static final OrderDto TEST_ORDER_1 = new OrderDto(TEST_USER.getPhone(), "111", "5678");
+    private static final OrderDto TEST_ORDER_2 = new OrderDto(TEST_USER.getPhone(), "222", "7890");
 
-    private final static ProductDto TEST_PRODUCT_1 = new ProductDto("pr1", TEST_ORDER_1.getProductCode(), "Prod 1", 2);
-    private final static ProductDto TEST_PRODUCT_2 = new ProductDto("pr2", TEST_ORDER_1.getProductCode(), "Prod 2", 5);
-    private final static ProductDto TEST_PRODUCT_3 = new ProductDto("pr3", TEST_ORDER_2.getProductCode(), "Prod 3", 7);
-    private final static ProductDto TEST_PRODUCT_4 = new ProductDto("pr4", TEST_ORDER_2.getProductCode(), "Prod 4", 3);
+    private static final ProductDto TEST_PRODUCT_1 = new ProductDto("pr1", TEST_ORDER_1.getProductCode(), "Prod 1", 2);
+    private static final ProductDto TEST_PRODUCT_2 = new ProductDto("pr2", TEST_ORDER_1.getProductCode(), "Prod 2", 5);
+    private static final ProductDto TEST_PRODUCT_3 = new ProductDto("pr3", TEST_ORDER_2.getProductCode(), "Prod 3", 7);
+    private static final ProductDto TEST_PRODUCT_4 = new ProductDto("pr4", TEST_ORDER_2.getProductCode(), "Prod 4", 3);
 
     @BeforeEach
     void setup() {
@@ -170,10 +170,5 @@ class UserOrdersControllerTest {
         verify(1, getRequestedFor(urlEqualTo("/orderSearchService/order/phone?phoneNumber=" + TEST_USER.getPhone())));
         verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + TEST_ORDER_1.getProductCode())));
         verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + TEST_ORDER_2.getProductCode())));
-    }
-
-    @SneakyThrows
-    private String toJson(Object o) {
-        return objectMapper.writeValueAsString(o);
     }
 }

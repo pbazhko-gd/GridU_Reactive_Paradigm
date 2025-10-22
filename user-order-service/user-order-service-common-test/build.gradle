@@ -8,4 +8,7 @@ dependencies {
     api "org.springframework.boot:spring-boot-starter-test"
     api "org.wiremock.integrations:wiremock-spring-boot:3.10.6"
     api "org.junit.jupiter:junit-jupiter"
+
+    annotationProcessor "org.projectlombok:lombok"
+    compileOnly "org.projectlombok:lombok"
 }
