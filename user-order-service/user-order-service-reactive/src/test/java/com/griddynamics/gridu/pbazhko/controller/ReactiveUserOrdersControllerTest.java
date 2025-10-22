@@ -34,7 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_NDJSON_VALUE;
 @SpringBootTest
 @AutoConfigureWebTestClient
 @ContextConfiguration(initializers = MongoDBTestContainerConfig.Initializer.class)
-class UserOrdersControllerTest {
+class ReactiveUserOrdersControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;

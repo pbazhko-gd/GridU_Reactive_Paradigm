@@ -14,7 +14,7 @@ import static org.springframework.http.MediaType.APPLICATION_NDJSON_VALUE;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public abstract class ReactiveUserOrdersController {
+public class ReactiveUserOrdersController {
 
     private final UserOrdersService<Flux<UserOrderDto>> userOrdersService;
 
