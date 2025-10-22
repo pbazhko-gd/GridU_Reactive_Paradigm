@@ -18,14 +18,13 @@ import static com.griddynamics.gridu.pbazhko.util.MdcHelper.onErrorResumeWithMdc
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ReactiveProductInfoService implements ProductInfoService<Mono<ProductDto>> {
+public class ReactiveProductInfoService {
 
     private final WebClient productInfoWebClient;
 
     @Value("${product-info-service.timeout}")
     private long productInfoServiceTimeout;
 
-    @Override
     public Mono<ProductDto> findTheMostRelevantProductByCode(String productCode) {
         return productInfoWebClient.get()
             .uri(uriBuilder -> uriBuilder

@@ -15,14 +15,13 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class NonReactiveProductInfoService implements ProductInfoService<ProductDto> {
+public class ProductInfoService {
 
     private final WebClient productInfoWebClient;
 
     @Value("${product-info-service.timeout}")
     private long productInfoServiceTimeout;
 
-    @Override
     public ProductDto findTheMostRelevantProductByCode(String productCode) {
         try {
             var products = Optional.ofNullable(

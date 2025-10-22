@@ -22,28 +22,28 @@ import static org.mockito.Mockito.when;
 class ReactiveUserInfoServiceTest {
 
     @Mock
-    private ReactiveUserInfoRepository userInfoRepository;
+    private ReactiveUserInfoRepository reactiveUserInfoRepository;
 
     @Spy
     private UserInfoMapper userInfoMapper = new UserInfoMapperImpl();
 
     @InjectMocks
-    private ReactiveUserInfoService userInfoService;
+    private ReactiveUserInfoService reactiveUserInfoService;
 
     private static final UserInfo USER_1 = new UserInfo("1", "User 1", "123");
     private static final UserInfo USER_2 = new UserInfo("2", "User 2", "456");
 
     @Test
     void findAllUsers_no_users_exist() {
-        when(userInfoRepository.findAll()).thenReturn(Flux.empty());
-        StepVerifier.create(userInfoService.findAllUsers())
+        when(reactiveUserInfoRepository.findAll()).thenReturn(Flux.empty());
+        StepVerifier.create(reactiveUserInfoService.findAllUsers())
             .verifyComplete();
     }
 
     @Test
     void findAllUsers_two_users_exist() {
-        when(userInfoRepository.findAll()).thenReturn(Flux.just(USER_1, USER_2));
-        StepVerifier.create(userInfoService.findAllUsers())
+        when(reactiveUserInfoRepository.findAll()).thenReturn(Flux.just(USER_1, USER_2));
+        StepVerifier.create(reactiveUserInfoService.findAllUsers())
             .assertNext(dto -> {
                 assertEquals(USER_1.getId(), dto.getId());
                 assertEquals(USER_1.getName(), dto.getName());
@@ -59,15 +59,15 @@ class ReactiveUserInfoServiceTest {
 
     @Test
     void findUserById_user_not_exists() {
-        when(userInfoRepository.findById(USER_1.getId())).thenReturn(Mono.empty());
-        StepVerifier.create(userInfoService.findUserById(USER_1.getId()))
+        when(reactiveUserInfoRepository.findById(USER_1.getId())).thenReturn(Mono.empty());
+        StepVerifier.create(reactiveUserInfoService.findUserById(USER_1.getId()))
             .verifyError(UserNotFoundException.class);
     }
 
     @Test
     void findUserById_user_exists() {
-        when(userInfoRepository.findById(USER_1.getId())).thenReturn(Mono.just(USER_1));
-        StepVerifier.create(userInfoService.findUserById(USER_1.getId()))
+        when(reactiveUserInfoRepository.findById(USER_1.getId())).thenReturn(Mono.just(USER_1));
+        StepVerifier.create(reactiveUserInfoService.findUserById(USER_1.getId()))
             .assertNext(dto -> {
                 assertEquals(USER_1.getId(), dto.getId());
                 assertEquals(USER_1.getName(), dto.getName());

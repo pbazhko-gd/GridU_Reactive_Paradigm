@@ -1,4 +1,4 @@
-package com.griddynamics.gridu.pbazhko.tests.config;
+package com.griddynamics.gridu.pbazhko.config;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;

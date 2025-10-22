@@ -1,7 +1,6 @@
 package com.griddynamics.gridu.pbazhko.service;
 
 import com.griddynamics.gridu.pbazhko.dto.OrderDto;
-import com.griddynamics.gridu.pbazhko.dto.ProductDto;
 import com.griddynamics.gridu.pbazhko.dto.UserInfoDto;
 import com.griddynamics.gridu.pbazhko.dto.UserOrderDto;
 import com.griddynamics.gridu.pbazhko.mapper.UserOrderMapper;
@@ -12,32 +11,30 @@ import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
-public class ReactiveUserOrdersService implements UserOrdersService<Flux<UserOrderDto>> {
+public class ReactiveUserOrdersService {
 
-    private final UserInfoService<Flux<UserInfoDto>, Mono<UserInfoDto>> userInfoService;
-    private final OrderSearchService<Flux<OrderDto>> orderSearchService;
-    private final ProductInfoService<Mono<ProductDto>> productInfoService;
+    private final ReactiveUserInfoService reactiveUserInfoService;
+    private final ReactiveOrderSearchService reactiveOrderSearchService;
+    private final ReactiveProductInfoService reactiveProductInfoService;
     private final UserOrderMapper userOrderMapper;
 
-    @Override
     public Flux<UserOrderDto> findAllUserOrders() {
-        return userInfoService.findAllUsers()
+        return reactiveUserInfoService.findAllUsers()
             .flatMap(this::findOrdersByUserPhone);
     }
 
-    @Override
     public Flux<UserOrderDto> findOrdersByUserId(String userId) {
-        return userInfoService.findUserById(userId)
+        return reactiveUserInfoService.findUserById(userId)
             .flatMapMany(this::findOrdersByUserPhone);
     }
 
     private Flux<UserOrderDto> findOrdersByUserPhone(UserInfoDto userInfo) {
-        return orderSearchService.findOrdersByPhone(userInfo.getPhone())
+        return reactiveOrderSearchService.findOrdersByPhone(userInfo.getPhone())
             .flatMap(order -> findProductsAndMapToUserOrderDto(userInfo, order));
     }
 
     private Mono<UserOrderDto> findProductsAndMapToUserOrderDto(UserInfoDto userInfo, OrderDto order) {
-        return productInfoService.findTheMostRelevantProductByCode(order.getProductCode())
+        return reactiveProductInfoService.findTheMostRelevantProductByCode(order.getProductCode())
             .map(product -> userOrderMapper.toDto(userInfo, order, product))
             .switchIfEmpty(Mono.just(userOrderMapper.toDto(userInfo, order, null)));
     }

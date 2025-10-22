@@ -1,4 +1,4 @@
-package com.griddynamics.gridu.pbazhko.tests.config;
+package com.griddynamics.gridu.pbazhko.config;
 
 import com.griddynamics.gridu.pbazhko.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;

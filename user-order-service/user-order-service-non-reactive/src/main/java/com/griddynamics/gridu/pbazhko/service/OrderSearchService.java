@@ -15,14 +15,13 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class NonReactiveOrderSearchService implements OrderSearchService<List<OrderDto>> {
+public class OrderSearchService {
 
     private final WebClient orderSearchWebClient;
 
     @Value("${order-search-service.timeout}")
     private long orderSearchServiceTimeout;
 
-    @Override
     public List<OrderDto> findOrdersByPhone(String phoneNumber) {
         try {
             var orders = Optional.ofNullable(

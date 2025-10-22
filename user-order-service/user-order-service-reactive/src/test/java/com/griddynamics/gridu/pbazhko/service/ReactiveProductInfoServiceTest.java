@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.wiremock.spring.EnableWireMock;
-import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.List;
@@ -33,7 +32,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 class ReactiveProductInfoServiceTest {
 
     @Autowired
-    private ProductInfoService<Mono<ProductDto>> productInfoService;
+    private ReactiveProductInfoService reactiveProductInfoService;
 
     @Value("${product-info-service.timeout}")
     private long productInfoServiceTimeout;
@@ -49,7 +48,7 @@ class ReactiveProductInfoServiceTest {
                 .withStatus(OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody("[]")));
-        StepVerifier.create(productInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
+        StepVerifier.create(reactiveProductInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
             .verifyComplete();
         verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE)));
     }
@@ -61,7 +60,7 @@ class ReactiveProductInfoServiceTest {
                 .withStatus(OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(toJson(TEST_PRODUCT_1))));
-        StepVerifier.create(productInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
+        StepVerifier.create(reactiveProductInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
             .assertNext(dto -> {
                 assertEquals(TEST_PRODUCT_1.getProductId(), dto.getProductId());
                 assertEquals(TEST_PRODUCT_1.getProductCode(), dto.getProductCode());
@@ -79,7 +78,7 @@ class ReactiveProductInfoServiceTest {
                 .withStatus(OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(toJson(List.of(TEST_PRODUCT_1, TEST_PRODUCT_2)))));
-        StepVerifier.create(productInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
+        StepVerifier.create(reactiveProductInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
             .assertNext(dto -> {
                 assertEquals(TEST_PRODUCT_2.getProductId(), dto.getProductId());
                 assertEquals(TEST_PRODUCT_2.getProductCode(), dto.getProductCode());
@@ -96,7 +95,7 @@ class ReactiveProductInfoServiceTest {
             .willReturn(aResponse()
                 .withStatus(NOT_FOUND.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
-        StepVerifier.create(productInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
+        StepVerifier.create(reactiveProductInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
             .verifyComplete();
         verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE)));
     }
@@ -107,7 +106,7 @@ class ReactiveProductInfoServiceTest {
             .willReturn(aResponse()
                 .withStatus(SERVICE_UNAVAILABLE.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
-        StepVerifier.create(productInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
+        StepVerifier.create(reactiveProductInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
             .verifyComplete();
         verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE)));
     }
@@ -120,7 +119,7 @@ class ReactiveProductInfoServiceTest {
                 .withStatus(OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(toJson(List.of(TEST_PRODUCT_1, TEST_PRODUCT_2)))));
-        StepVerifier.create(productInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
+        StepVerifier.create(reactiveProductInfoService.findTheMostRelevantProductByCode(PRODUCT_CODE))
             .verifyComplete();
         verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + PRODUCT_CODE)));
     }

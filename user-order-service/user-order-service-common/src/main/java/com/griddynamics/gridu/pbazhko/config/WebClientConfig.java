@@ -1,4 +1,4 @@
-package com.griddynamics.gridu.pbazhko.tests.config;
+package com.griddynamics.gridu.pbazhko.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

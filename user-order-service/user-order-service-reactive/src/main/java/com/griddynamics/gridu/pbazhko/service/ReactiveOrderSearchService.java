@@ -16,14 +16,13 @@ import static com.griddynamics.gridu.pbazhko.util.MdcHelper.onErrorResumeWithMdc
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ReactiveOrderSearchService implements OrderSearchService<Flux<OrderDto>> {
+public class ReactiveOrderSearchService {
 
     private final WebClient orderSearchWebClient;
 
     @Value("${order-search-service.timeout}")
     private long orderSearchServiceTimeout;
 
-    @Override
     public Flux<OrderDto> findOrdersByPhone(String phoneNumber) {
         return orderSearchWebClient.get()
             .uri(uriBuilder -> uriBuilder

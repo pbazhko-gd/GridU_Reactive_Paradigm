@@ -1,17 +1,14 @@
 package com.griddynamics.gridu.pbazhko.service;
 
-import com.griddynamics.gridu.pbazhko.dto.OrderDto;
 import com.griddynamics.gridu.pbazhko.tests.config.MongoDBTestContainerConfig;
+import com.griddynamics.gridu.pbazhko.dto.OrderDto;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.wiremock.spring.EnableWireMock;
-import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -34,14 +31,14 @@ import static org.springframework.http.MediaType.APPLICATION_NDJSON_VALUE;
 class ReactiveOrderSearchServiceTest {
 
     @Autowired
-    private OrderSearchService<Flux<OrderDto>> orderSearchService;
+    private ReactiveOrderSearchService reactiveOrderSearchService;
 
     @Value("${order-search-service.timeout}")
     private long orderSearchServiceTimeout;
 
     private static final String TEST_PHONE = "123456789";
 
-    private static final  OrderDto TEST_ORDER_1 = new OrderDto(TEST_PHONE, "111", "5678");
+    private static final OrderDto TEST_ORDER_1 = new OrderDto(TEST_PHONE, "111", "5678");
     private static final OrderDto TEST_ORDER_2 = new OrderDto(TEST_PHONE, "222", "7890");
 
     @Test
@@ -51,7 +48,7 @@ class ReactiveOrderSearchServiceTest {
                 .withStatus(OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_NDJSON_VALUE)
                 .withBody("")));
-        StepVerifier.create(orderSearchService.findOrdersByPhone(TEST_PHONE))
+        StepVerifier.create(reactiveOrderSearchService.findOrdersByPhone(TEST_PHONE))
             .verifyComplete();
         verify(1, getRequestedFor(urlEqualTo("/orderSearchService/order/phone?phoneNumber=" + TEST_PHONE)));
     }
@@ -63,7 +60,7 @@ class ReactiveOrderSearchServiceTest {
                 .withStatus(OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_NDJSON_VALUE)
                 .withBody("%s\n%s".formatted(toJson(TEST_ORDER_1), toJson(TEST_ORDER_2)))));
-        StepVerifier.create(orderSearchService.findOrdersByPhone(TEST_PHONE))
+        StepVerifier.create(reactiveOrderSearchService.findOrdersByPhone(TEST_PHONE))
             .assertNext(dto -> {
                 assertEquals(TEST_ORDER_1.getPhoneNumber(), dto.getPhoneNumber());
                 assertEquals(TEST_ORDER_1.getOrderNumber(), dto.getOrderNumber());
@@ -84,7 +81,7 @@ class ReactiveOrderSearchServiceTest {
             .willReturn(aResponse()
                 .withStatus(SERVICE_UNAVAILABLE.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_NDJSON_VALUE)));
-        StepVerifier.create(orderSearchService.findOrdersByPhone(TEST_PHONE))
+        StepVerifier.create(reactiveOrderSearchService.findOrdersByPhone(TEST_PHONE))
             .verifyComplete();
         verify(1, getRequestedFor(urlEqualTo("/orderSearchService/order/phone?phoneNumber=" + TEST_PHONE)));
     }
@@ -97,7 +94,7 @@ class ReactiveOrderSearchServiceTest {
                 .withStatus(OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_NDJSON_VALUE)
                 .withBody("%s\n%s".formatted(toJson(TEST_ORDER_1), toJson(TEST_ORDER_2)))));
-        StepVerifier.create(orderSearchService.findOrdersByPhone(TEST_PHONE))
+        StepVerifier.create(reactiveOrderSearchService.findOrdersByPhone(TEST_PHONE))
             .verifyComplete();
         verify(1, getRequestedFor(urlEqualTo("/orderSearchService/order/phone?phoneNumber=" + TEST_PHONE)));
     }

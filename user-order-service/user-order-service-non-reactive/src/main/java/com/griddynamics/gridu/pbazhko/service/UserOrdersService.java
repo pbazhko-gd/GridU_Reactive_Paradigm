@@ -1,7 +1,6 @@
 package com.griddynamics.gridu.pbazhko.service;
 
 import com.griddynamics.gridu.pbazhko.dto.OrderDto;
-import com.griddynamics.gridu.pbazhko.dto.ProductDto;
 import com.griddynamics.gridu.pbazhko.dto.UserInfoDto;
 import com.griddynamics.gridu.pbazhko.dto.UserOrderDto;
 import com.griddynamics.gridu.pbazhko.mapper.UserOrderMapper;
@@ -13,14 +12,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class NonReactiveUserOrdersService implements UserOrdersService<List<UserOrderDto>> {
+public class UserOrdersService {
 
-    private final UserInfoService<List<UserInfoDto>, UserInfoDto> userInfoService;
-    private final OrderSearchService<List<OrderDto>> orderSearchService;
-    private final ProductInfoService<ProductDto> productInfoService;
+    private final UserInfoService userInfoService;
+    private final OrderSearchService orderSearchService;
+    private final ProductInfoService productInfoService;
     private final UserOrderMapper userOrderMapper;
 
-    @Override
     public List<UserOrderDto> findAllUserOrders() {
         return userInfoService.findAllUsers().stream()
             .map(this::findOrdersByUserPhone)
@@ -28,7 +26,6 @@ public class NonReactiveUserOrdersService implements UserOrdersService<List<User
             .toList();
     }
 
-    @Override
     public List<UserOrderDto> findOrdersByUserId(String userId) {
         return findOrdersByUserPhone(userInfoService.findUserById(userId));
     }

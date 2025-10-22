@@ -43,7 +43,7 @@ class ReactiveUserOrdersControllerTest {
     private WebTestClient webClient;
 
     @Autowired
-    private ReactiveUserInfoRepository userInfoRepository;
+    private ReactiveUserInfoRepository reactiveUserInfoRepository;
 
     private static final UserInfo TEST_USER = new UserInfo("1", "User 1", "123");
 
@@ -57,7 +57,7 @@ class ReactiveUserOrdersControllerTest {
 
     @BeforeEach
     void setup() {
-        userInfoRepository.deleteAll().block();
+        reactiveUserInfoRepository.deleteAll().block();
     }
 
     @Test
@@ -70,7 +70,7 @@ class ReactiveUserOrdersControllerTest {
 
     @Test
     void findAllUserOrders_one_user_no_orders() {
-        userInfoRepository.save(TEST_USER).block();
+        reactiveUserInfoRepository.save(TEST_USER).block();
         stubFor(get(urlEqualTo("/orderSearchService/order/phone?phoneNumber=" + TEST_USER.getPhone()))
             .willReturn(aResponse()
                 .withStatus(OK.value())
@@ -84,7 +84,7 @@ class ReactiveUserOrdersControllerTest {
 
     @Test
     void findAllUserOrders_one_user_two_orders_two_products_per_order() {
-        userInfoRepository.save(TEST_USER).block();
+        reactiveUserInfoRepository.save(TEST_USER).block();
         stubFor(get(urlEqualTo("/orderSearchService/order/phone?phoneNumber=" + TEST_USER.getPhone()))
             .willReturn(aResponse()
                 .withStatus(OK.value())
@@ -127,7 +127,7 @@ class ReactiveUserOrdersControllerTest {
 
     @Test
     void findAllUserOrders_one_user_order_service_unavailable() {
-        userInfoRepository.save(TEST_USER).block();
+        reactiveUserInfoRepository.save(TEST_USER).block();
         stubFor(get(urlEqualTo("/orderSearchService/order/phone?phoneNumber=" + TEST_USER.getPhone()))
             .willReturn(aResponse()
                 .withStatus(SERVICE_UNAVAILABLE.value())));
@@ -138,7 +138,7 @@ class ReactiveUserOrdersControllerTest {
 
     @Test
     void findAllUserOrders_one_user_two_orders_product_service_unavailable() {
-        userInfoRepository.save(TEST_USER).block();
+        reactiveUserInfoRepository.save(TEST_USER).block();
         stubFor(get(urlEqualTo("/orderSearchService/order/phone?phoneNumber=" + TEST_USER.getPhone()))
             .willReturn(aResponse()
                 .withStatus(OK.value())

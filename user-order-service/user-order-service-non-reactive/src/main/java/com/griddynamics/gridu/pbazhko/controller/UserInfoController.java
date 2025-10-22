@@ -13,9 +13,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequiredArgsConstructor
-public class NonReactiveUserInfoController {
+public class UserInfoController {
 
-    private final UserInfoService<List<UserInfoDto>, UserInfoDto> userInfoService;
+    private final UserInfoService userInfoService;
 
     @GetMapping(value = "/users", produces = APPLICATION_JSON_VALUE)
     public List<UserInfoDto> findAllUsers() {

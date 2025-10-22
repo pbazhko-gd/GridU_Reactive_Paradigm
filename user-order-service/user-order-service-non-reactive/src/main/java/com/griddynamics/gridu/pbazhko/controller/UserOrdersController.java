@@ -15,9 +15,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class NonReactiveUserOrdersController {
+public class UserOrdersController {
 
-    private final UserOrdersService<List<UserOrderDto>> userOrdersService;
+    private final UserOrdersService userOrdersService;
 
     @GetMapping(value = "/users/orders", produces = APPLICATION_JSON_VALUE)
     public List<UserOrderDto> findAllUserOrders() {

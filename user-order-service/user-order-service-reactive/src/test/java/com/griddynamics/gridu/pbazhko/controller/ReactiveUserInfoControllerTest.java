@@ -27,14 +27,14 @@ class ReactiveUserInfoControllerTest {
     private WebTestClient webClient;
 
     @Autowired
-    private ReactiveUserInfoRepository userInfoRepository;
+    private ReactiveUserInfoRepository reactiveUserInfoRepository;
 
     private static final UserInfo USER_1 = new UserInfo("1", "User 1", "123");
     private static final UserInfo USER_2 = new UserInfo("2", "User 2", "456");
 
     @BeforeEach
     void setup() {
-        userInfoRepository.deleteAll().block();
+        reactiveUserInfoRepository.deleteAll().block();
     }
 
     @Test
@@ -46,8 +46,8 @@ class ReactiveUserInfoControllerTest {
 
     @Test
     void findAllUsers_two_users_exist() {
-        userInfoRepository.save(USER_1).block();
-        userInfoRepository.save(USER_2).block();
+        reactiveUserInfoRepository.save(USER_1).block();
+        reactiveUserInfoRepository.save(USER_2).block();
         webClient.get().uri("/users").exchange()
             .expectStatus().isOk()
             .expectHeader().contentTypeCompatibleWith(APPLICATION_NDJSON_VALUE)
@@ -65,14 +65,14 @@ class ReactiveUserInfoControllerTest {
 
     @Test
     void findUserById_user_not_exists() {
-        userInfoRepository.save(USER_2).block();
+        reactiveUserInfoRepository.save(USER_2).block();
         webClient.get().uri("/users/{id}", USER_1.getId()).exchange()
             .expectStatus().isNotFound();
     }
 
     @Test
     void findUserById_user_exists() {
-        userInfoRepository.save(USER_1).block();
+        reactiveUserInfoRepository.save(USER_1).block();
         webClient.get().uri("/users/{id}", USER_1.getId()).exchange()
             .expectStatus().isOk()
             .expectHeader().contentTypeCompatibleWith(APPLICATION_JSON)

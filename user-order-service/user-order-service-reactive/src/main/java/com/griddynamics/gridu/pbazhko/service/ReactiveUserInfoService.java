@@ -16,7 +16,7 @@ import static com.griddynamics.gridu.pbazhko.util.MdcHelper.useMdcForMono;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ReactiveUserInfoService implements UserInfoService<Flux<UserInfoDto>, Mono<UserInfoDto>> {
+public class ReactiveUserInfoService {
 
     private final ReactiveUserInfoRepository userInfoRepository;
     private final UserInfoMapper userInfoMapper;
