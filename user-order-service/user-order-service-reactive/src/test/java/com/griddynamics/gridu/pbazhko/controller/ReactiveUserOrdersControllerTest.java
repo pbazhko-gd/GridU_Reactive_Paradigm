@@ -156,21 +156,26 @@ class ReactiveUserOrdersControllerTest {
             .expectStatus().isOk()
             .expectBodyList(UserOrderDto.class)
             .value(dtos -> {
-                assertThat(dtos).hasSize(2);
-
-                assertThat(dtos.get(0).getPhoneNumber()).isEqualTo(TEST_USER.getPhone());
-                assertThat(dtos.get(0).getUserName()).isEqualTo(TEST_USER.getName());
-                assertThat(dtos.get(0).getOrderNumber()).isEqualTo(TEST_ORDER_1.getOrderNumber());
-                assertThat(dtos.get(0).getProductCode()).isEqualTo(TEST_ORDER_1.getProductCode());
-                assertThat(dtos.get(0).getProductId()).isNull();
-                assertThat(dtos.get(0).getProductName()).isNull();
-
-                assertThat(dtos.get(1).getPhoneNumber()).isEqualTo(TEST_USER.getPhone());
-                assertThat(dtos.get(1).getUserName()).isEqualTo(TEST_USER.getName());
-                assertThat(dtos.get(1).getOrderNumber()).isEqualTo(TEST_ORDER_2.getOrderNumber());
-                assertThat(dtos.get(1).getProductCode()).isEqualTo(TEST_ORDER_2.getProductCode());
-                assertThat(dtos.get(1).getProductId()).isNull();
-                assertThat(dtos.get(1).getProductName()).isNull();
+                assertThat(dtos)
+                    .hasSize(2)
+                    .containsExactlyInAnyOrder(
+                        UserOrderDto.builder()
+                            .phoneNumber(TEST_USER.getPhone())
+                            .userName(TEST_USER.getName())
+                            .orderNumber(TEST_ORDER_1.getOrderNumber())
+                            .productCode(TEST_ORDER_1.getProductCode())
+                            .productId(null)
+                            .productName(null)
+                            .build(),
+                        UserOrderDto.builder()
+                            .phoneNumber(TEST_USER.getPhone())
+                            .userName(TEST_USER.getName())
+                            .orderNumber(TEST_ORDER_2.getOrderNumber())
+                            .productCode(TEST_ORDER_2.getProductCode())
+                            .productId(null)
+                            .productName(null)
+                            .build()
+                    );
             });
         verify(1, getRequestedFor(urlEqualTo("/orderSearchService/order/phone?phoneNumber=" + TEST_USER.getPhone())));
         verify(1, getRequestedFor(urlEqualTo("/productInfoService/product/names?productCode=" + TEST_ORDER_1.getProductCode())));
