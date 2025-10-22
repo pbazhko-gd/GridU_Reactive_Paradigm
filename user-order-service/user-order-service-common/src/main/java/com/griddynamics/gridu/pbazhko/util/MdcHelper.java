@@ -11,6 +11,7 @@ import java.util.function.Function;
 @UtilityClass
 public class MdcHelper {
 
+    public static final String REQUEST_ID_HEADER = "X-Request-ID";
     public static final String REQUEST_ID_MDC_KEY = "requestId";
 
     public static <T> Function<Flux<T>, Flux<T>> useMdcForFlux() {

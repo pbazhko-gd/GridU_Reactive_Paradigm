@@ -25,22 +25,27 @@ public class ProductInfoService {
     public ProductDto findTheMostRelevantProductByCode(String productCode) {
         try {
             var products = Optional.ofNullable(
-                productInfoWebClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                        .path("/product/names")
-                        .queryParam("productCode", productCode)
-                        .build()
-                    ).retrieve()
-                    .bodyToFlux(ProductDto.class)
-                    .timeout(Duration.ofMillis(productInfoServiceTimeout))
-                    .collectList()
-                    .block()
-            ).orElse(Collections.emptyList());
-            log.info("Found products info {} for code {}", products, productCode);
+                    productInfoWebClient.get()
+                        .uri(uriBuilder -> uriBuilder
+                            .path("/product/names")
+                            .queryParam("productCode", productCode)
+                            .build()
+                        ).retrieve()
+                        .bodyToFlux(ProductDto.class)
+                        .timeout(Duration.ofMillis(productInfoServiceTimeout))
+                        .collectList()
+                        .block()
+                ).orElse(Collections.emptyList())
+                .stream()
+                .peek(product -> log.info("Found product info {} for code {}", product, productCode))
+                .toList();
 
             var mostRelevantProduct = products.stream().max(Comparator.comparing(ProductDto::getScore)).orElse(null);
 
-            log.info("Detect the most relevant product with the highest score: {}", mostRelevantProduct);
+            if (mostRelevantProduct != null) {
+                log.info("Detect the most relevant product with the highest score: {}", mostRelevantProduct);
+            }
+
             return mostRelevantProduct;
         } catch (Exception ex) {
             log.error("Cannot retrieve products by the code {}: {}", productCode, ex.getMessage());

@@ -10,12 +10,11 @@ import reactor.util.context.Context;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.griddynamics.gridu.pbazhko.util.MdcHelper.REQUEST_ID_HEADER;
 import static com.griddynamics.gridu.pbazhko.util.MdcHelper.REQUEST_ID_MDC_KEY;
 
 @Component
 public class LoggingWebFilter implements WebFilter {
-
-    private static final String REQUEST_ID_HEADER = "X-Request-ID";
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
