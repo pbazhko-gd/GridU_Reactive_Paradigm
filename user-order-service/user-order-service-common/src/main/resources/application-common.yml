@@ -2,10 +2,10 @@ spring.data.mongodb.uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@localhost
 
 order-search-service:
   baseUrl: http://localhost:8081/orderSearchService
-  timeout: 5000
+  timeout: 15000
 product-info-service:
   baseUrl: http://localhost:8082/productInfoService
-  timeout: 5000
+  timeout: 15000
 
 logging:
   level:
