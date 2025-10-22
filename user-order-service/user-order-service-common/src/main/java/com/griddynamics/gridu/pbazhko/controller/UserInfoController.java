@@ -1,7 +1,7 @@
 package com.griddynamics.gridu.pbazhko.controller;
 
 import com.griddynamics.gridu.pbazhko.dto.UserInfoDto;
-import com.griddynamics.gridu.pbazhko.service.UserInfoService;
+import com.griddynamics.gridu.pbazhko.service.impl.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

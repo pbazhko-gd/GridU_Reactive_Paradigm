@@ -4,6 +4,7 @@ import com.griddynamics.gridu.pbazhko.dto.OrderDto;
 import com.griddynamics.gridu.pbazhko.dto.UserInfoDto;
 import com.griddynamics.gridu.pbazhko.dto.UserOrderDto;
 import com.griddynamics.gridu.pbazhko.mapper.UserOrderMapper;
+import com.griddynamics.gridu.pbazhko.service.impl.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -11,18 +12,20 @@ import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
-public class UserOrdersService {
+public class ReactiveUserOrdersService implements UserOrdersService {
 
     private final UserInfoService userInfoService;
-    private final OrderSearchService orderSearchService;
-    private final ProductInfoService productInfoService;
+    private final ReactiveOrderSearchService orderSearchService;
+    private final ReactiveProductInfoService productInfoService;
     private final UserOrderMapper userOrderMapper;
 
+    @Override
     public Flux<UserOrderDto> findAllUserOrders() {
         return userInfoService.findAllUsers()
                 .flatMap(this::findOrdersByUserPhone);
     }
 
+    @Override
     public Flux<UserOrderDto> findOrdersByUserId(String userId) {
         return userInfoService.findUserById(userId)
                 .flatMapMany(this::findOrdersByUserPhone);

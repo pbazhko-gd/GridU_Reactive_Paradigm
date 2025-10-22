@@ -1,4 +1,4 @@
-package com.griddynamics.gridu.pbazhko.service;
+package com.griddynamics.gridu.pbazhko.service.impl;
 
 import com.griddynamics.gridu.pbazhko.dto.UserInfoDto;
 import com.griddynamics.gridu.pbazhko.exception.UserNotFoundException;

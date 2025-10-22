@@ -5,6 +5,7 @@ import com.griddynamics.gridu.pbazhko.mapper.UserInfoMapper;
 import com.griddynamics.gridu.pbazhko.mapper.UserInfoMapperImpl;
 import com.griddynamics.gridu.pbazhko.model.UserInfo;
 import com.griddynamics.gridu.pbazhko.repository.UserInfoRepository;
+import com.griddynamics.gridu.pbazhko.service.impl.UserInfoService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

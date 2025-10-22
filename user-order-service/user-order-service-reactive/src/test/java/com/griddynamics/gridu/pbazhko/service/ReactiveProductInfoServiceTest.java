@@ -25,10 +25,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @EnableWireMock
 @SpringBootTest
 @ContextConfiguration(initializers = MongoDBTestContainerConfig.Initializer.class)
-class ProductInfoServiceTest {
+class ReactiveProductInfoServiceTest {
 
     @Autowired
-    private ProductInfoService productInfoService;
+    private ReactiveProductInfoService productInfoService;
 
     @Value("${product-info-service.timeout}")
     private long productInfoServiceTimeout;

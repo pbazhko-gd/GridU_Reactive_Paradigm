@@ -18,13 +18,14 @@ import static com.griddynamics.gridu.pbazhko.util.MdcHelper.withMdcFlux;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ProductInfoService {
+public class ReactiveProductInfoService implements ProductInfoService {
 
     private final WebClient productInfoWebClient;
 
     @Value("${product-info-service.timeout}")
     private long productInfoServiceTimeout;
 
+    @Override
     public Mono<ProductDto> findTheMostRelevantProductByCode(String productCode) {
         return productInfoWebClient.get()
                 .uri(uriBuilder -> uriBuilder

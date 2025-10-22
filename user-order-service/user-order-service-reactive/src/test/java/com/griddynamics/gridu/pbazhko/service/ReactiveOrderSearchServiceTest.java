@@ -26,10 +26,10 @@ import static org.springframework.http.MediaType.APPLICATION_NDJSON_VALUE;
 @EnableWireMock
 @SpringBootTest
 @ContextConfiguration(initializers = MongoDBTestContainerConfig.Initializer.class)
-class OrderSearchServiceTest {
+class ReactiveOrderSearchServiceTest {
 
     @Autowired
-    private OrderSearchService orderSearchService;
+    private ReactiveOrderSearchService orderSearchService;
 
     @Value("${order-search-service.timeout}")
     private long orderSearchServiceTimeout;
