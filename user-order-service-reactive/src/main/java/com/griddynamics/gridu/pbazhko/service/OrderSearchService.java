@@ -10,7 +10,7 @@ import reactor.core.publisher.Flux;
 
 import java.time.Duration;
 
-import static com.griddynamics.gridu.pbazhko.util.MdcHelper.applyContextForMdc;
+import static com.griddynamics.gridu.pbazhko.util.MdcHelper.*;
 
 @Slf4j
 @Service
@@ -31,11 +31,11 @@ public class OrderSearchService {
                 ).retrieve()
                 .bodyToFlux(OrderDto.class)
                 .timeout(Duration.ofMillis(orderSearchServiceTimeout))
-                .onErrorResume(throwable -> {
-                    log.error("Cannot retrieve orders by the phone {}: {}", phoneNumber, throwable.getMessage());
+                .transform(useMdcForFlux())
+                .onErrorResume(withMdcFlux(ex -> {
+                    log.error("Cannot retrieve orders by the phone {}: {}", phoneNumber, ex.getMessage());
                     return Flux.empty();
-                })
-                .transform(applyContextForMdc())
+                }))
                 .doOnNext(order -> log.info("Found order {} for phoneNumber '{}'", order, phoneNumber))
                 .log();
     }

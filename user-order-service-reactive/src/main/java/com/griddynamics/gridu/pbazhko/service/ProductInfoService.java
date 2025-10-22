@@ -12,7 +12,8 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.function.BiFunction;
 
-import static com.griddynamics.gridu.pbazhko.util.MdcHelper.applyContextForMdc;
+import static com.griddynamics.gridu.pbazhko.util.MdcHelper.useMdcForFlux;
+import static com.griddynamics.gridu.pbazhko.util.MdcHelper.withMdcFlux;
 
 @Slf4j
 @Service
@@ -33,14 +34,13 @@ public class ProductInfoService {
                 ).retrieve()
                 .bodyToFlux(ProductDto.class)
                 .timeout(Duration.ofMillis(productInfoServiceTimeout))
-                .onErrorResume(throwable -> {
-                    log.error("Cannot retrieve products by the code {}: {}", productCode, throwable.getMessage());
-                    return Flux.empty();
-                })
-                .transform(applyContextForMdc())
+                .transform(useMdcForFlux())
                 .doOnNext(product -> log.info("Found product info {} for code {}", product, productCode))
+                .onErrorResume(withMdcFlux(ex -> {
+                    log.error("Cannot retrieve products by the code {}: {}", productCode, ex.getMessage());
+                    return Flux.empty();
+                }))
                 .reduce(chooseTheMostRelevantProduct())
-                .transform(applyContextForMdc())
                 .doOnNext(product -> log.info("Detect the most relevant product with the highest score: {}", product))
                 .log();
     }

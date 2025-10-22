@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static com.griddynamics.gridu.pbazhko.util.MdcHelper.applyContextForMdc;
+import static com.griddynamics.gridu.pbazhko.util.MdcHelper.*;
 
 @Slf4j
 @Service
@@ -22,7 +22,7 @@ public class UserInfoService {
 
     public Flux<UserInfoDto> findAllUsers() {
         return userInfoRepository.findAll()
-                .transform(applyContextForMdc())
+                .transform(useMdcForFlux())
                 .map(userInfoMapper::toDto)
                 .doOnNext(user -> log.info("Found user {}", user))
                 .log();
@@ -30,7 +30,7 @@ public class UserInfoService {
 
     public Mono<UserInfoDto> findUserById(String userId) {
         return userInfoRepository.findById(userId)
-                .transform(applyContextForMdc())
+                .transform(useMdcForMono())
                 .switchIfEmpty(Mono.error(new UserNotFoundException(userId)))
                 .map(userInfoMapper::toDto)
                 .doOnNext(user -> log.info("Found user {} by userId '{}'", user, userId))
