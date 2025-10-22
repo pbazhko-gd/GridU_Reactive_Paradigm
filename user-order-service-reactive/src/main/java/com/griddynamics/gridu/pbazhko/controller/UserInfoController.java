@@ -19,11 +19,11 @@ public class UserInfoController {
 
     @GetMapping(value = "/users", produces = APPLICATION_NDJSON_VALUE)
     public Flux<UserInfoDto> findAllUsers() {
-        return userInfoService.findAllUsers().log();
+        return userInfoService.findAllUsers();
     }
 
     @GetMapping("/users/{id}")
     public Mono<UserInfoDto> findUserById(@PathVariable("id") String id) {
-        return userInfoService.findUserById(id).log();
+        return userInfoService.findUserById(id);
     }
 }

@@ -20,11 +20,11 @@ public class UserOrdersController {
 
     @GetMapping(value = "/users/orders", produces = APPLICATION_NDJSON_VALUE)
     public Flux<UserOrderDto> findAllUserOrders() {
-        return userOrdersService.findAllUserOrders().log();
+        return userOrdersService.findAllUserOrders();
     }
 
     @GetMapping(value = "/users/{id}/orders", produces = APPLICATION_NDJSON_VALUE)
     public Flux<UserOrderDto> findOrdersByUserId(@PathVariable("id") String id) {
-        return userOrdersService.findOrdersByUserId(id).log();
+        return userOrdersService.findOrdersByUserId(id);
     }
 }
