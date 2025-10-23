@@ -24,21 +24,21 @@ public class OrderSearchService {
 
     public List<OrderDto> findOrdersByPhone(String phoneNumber) {
         try {
-            var orders = Optional.ofNullable(
-                orderSearchWebClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                        .path("/order/phone")
-                        .queryParam("phoneNumber", phoneNumber)
-                        .build()
-                    ).retrieve()
-                    .bodyToFlux(OrderDto.class)
-                    .timeout(Duration.ofMillis(orderSearchServiceTimeout))
-                    .collectList()
-                    .block()
-            ).orElse(Collections.emptyList());
-
-            log.info("Found orders {} for phoneNumber '{}'", orders, phoneNumber);
-            return orders;
+            return Optional.ofNullable(
+                    orderSearchWebClient.get()
+                        .uri(uriBuilder -> uriBuilder
+                            .path("/order/phone")
+                            .queryParam("phoneNumber", phoneNumber)
+                            .build()
+                        ).retrieve()
+                        .bodyToFlux(OrderDto.class)
+                        .timeout(Duration.ofMillis(orderSearchServiceTimeout))
+                        .collectList()
+                        .block()
+                ).orElse(Collections.emptyList())
+                .stream()
+                .peek(order -> log.info("Found order {} for phoneNumber '{}'", order, phoneNumber))
+                .toList();
         } catch (Exception ex) {
             log.error("Cannot retrieve orders by the phone {}: {}", phoneNumber, ex.getMessage());
             return Collections.emptyList();

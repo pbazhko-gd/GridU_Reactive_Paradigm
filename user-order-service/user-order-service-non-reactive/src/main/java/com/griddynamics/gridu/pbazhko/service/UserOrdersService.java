@@ -4,13 +4,17 @@ import com.griddynamics.gridu.pbazhko.dto.OrderDto;
 import com.griddynamics.gridu.pbazhko.dto.UserInfoDto;
 import com.griddynamics.gridu.pbazhko.dto.UserOrderDto;
 import com.griddynamics.gridu.pbazhko.mapper.UserOrderMapper;
+import com.griddynamics.gridu.pbazhko.util.MdcAwareExecutor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserOrdersService {
@@ -20,11 +24,27 @@ public class UserOrdersService {
     private final ProductInfoService productInfoService;
     private final UserOrderMapper userOrderMapper;
 
+    private final Executor executor = new MdcAwareExecutor(Executors.newFixedThreadPool(20));
+
     public List<UserOrderDto> findAllUserOrders() {
-        return userInfoService.findAllUsers().stream()
-            .map(this::findOrdersForUser)
-            .flatMap(Collection::stream)
+        var futures = userInfoService.findAllUsers().stream()
+            .map(user -> CompletableFuture.supplyAsync(() -> findOrdersForUser(user), executor))
             .toList();
+
+        var allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+
+        return allOf.thenApply(v -> futures.stream()
+            .map(future -> future.handle((res, ex) -> {
+                if (ex != null) {
+                    log.error("Error in completable future", ex);
+                    return null;
+                }
+                return res;
+            }))
+            .map(CompletableFuture::join)
+            .flatMap(List::stream)
+            .toList()
+        ).join();
     }
 
     public List<UserOrderDto> findOrdersByUserId(String userId) {
@@ -35,12 +55,19 @@ public class UserOrdersService {
     private List<UserOrderDto> findOrdersForUser(UserInfoDto userInfo) {
         var orders = orderSearchService.findOrdersByPhone(userInfo.getPhone());
         var futures = orders.stream()
-            .map(order -> CompletableFuture.supplyAsync(() -> getUserOrder(userInfo, order)))
+            .map(order -> CompletableFuture.supplyAsync(() -> getUserOrder(userInfo, order), executor))
             .toList();
 
         var allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
 
         return allOf.thenApply(v -> futures.stream()
+            .map(future -> future.handle((res, ex) -> {
+                if (ex != null) {
+                    log.error("Error in completable future", ex);
+                    return null;
+                }
+                return res;
+            }))
             .map(CompletableFuture::join)
             .toList()
         ).join();
