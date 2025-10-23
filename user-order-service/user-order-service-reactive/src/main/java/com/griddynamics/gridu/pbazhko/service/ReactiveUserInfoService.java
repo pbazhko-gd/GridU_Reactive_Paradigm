@@ -22,6 +22,7 @@ public class ReactiveUserInfoService {
     private final UserInfoMapper userInfoMapper;
 
     public Flux<UserInfoDto> findAllUsers() {
+        log.info("Retrieving all users");
         return userInfoRepository.findAll()
             .transform(useMdcForFlux())
             .map(userInfoMapper::toDto)
@@ -30,6 +31,7 @@ public class ReactiveUserInfoService {
     }
 
     public Mono<UserInfoDto> findUserById(String userId) {
+        log.info("Retrieving user by userId='{}'", userId);
         return userInfoRepository.findById(userId)
             .transform(useMdcForMono())
             .switchIfEmpty(Mono.error(new UserNotFoundException(userId)))

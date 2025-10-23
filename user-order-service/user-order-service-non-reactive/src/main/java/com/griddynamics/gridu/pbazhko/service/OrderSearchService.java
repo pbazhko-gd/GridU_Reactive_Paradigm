@@ -24,6 +24,7 @@ public class OrderSearchService {
 
     public List<OrderDto> findOrdersByPhone(String phoneNumber) {
         try {
+            log.info("Retrieve orders by phone '{}'", phoneNumber);
             return Optional.ofNullable(
                     orderSearchWebClient.get()
                         .uri(uriBuilder -> uriBuilder

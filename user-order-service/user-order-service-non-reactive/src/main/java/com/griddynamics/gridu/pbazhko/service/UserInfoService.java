@@ -19,6 +19,7 @@ public class UserInfoService {
     private final UserInfoMapper userInfoMapper;
 
     public List<UserInfoDto> findAllUsers() {
+        log.info("Retrieving all users");
         return userInfoRepository.findAll().stream()
             .map(userInfoMapper::toDto)
             .peek(user -> log.info("Found user {}", user))
@@ -26,6 +27,7 @@ public class UserInfoService {
     }
 
     public UserInfoDto findUserById(String userId) {
+        log.info("Retrieving user by userId='{}'", userId);
         return userInfoRepository.findById(userId)
             .map(userInfoMapper::toDto)
             .map(user -> {

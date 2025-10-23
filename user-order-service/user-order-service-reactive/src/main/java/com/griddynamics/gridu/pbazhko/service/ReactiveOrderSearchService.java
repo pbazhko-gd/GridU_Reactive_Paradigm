@@ -24,6 +24,7 @@ public class ReactiveOrderSearchService {
     private long orderSearchServiceTimeout;
 
     public Flux<OrderDto> findOrdersByPhone(String phoneNumber) {
+        log.info("Retrieve orders by phone '{}'", phoneNumber);
         return orderSearchWebClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/order/phone")

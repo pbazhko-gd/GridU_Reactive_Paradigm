@@ -24,6 +24,7 @@ public class ProductInfoService {
 
     public ProductDto findTheMostRelevantProductByCode(String productCode) {
         try {
+            log.info("Retrieve products by code '{}'", productCode);
             var products = Optional.ofNullable(
                     productInfoWebClient.get()
                         .uri(uriBuilder -> uriBuilder

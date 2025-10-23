@@ -26,6 +26,7 @@ public class ReactiveProductInfoService {
     private long productInfoServiceTimeout;
 
     public Mono<ProductDto> findTheMostRelevantProductByCode(String productCode) {
+        log.info("Retrieve products by code '{}'", productCode);
         return productInfoWebClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/product/names")

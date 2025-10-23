@@ -27,13 +27,9 @@ public class UserOrdersService {
     private final Executor executor = new MdcAwareExecutor(Executors.newFixedThreadPool(20));
 
     public List<UserOrderDto> findAllUserOrders() {
+        log.info("Retrieving all users orders");
         var futures = userInfoService.findAllUsers().stream()
             .map(user -> CompletableFuture.supplyAsync(() -> findOrdersForUser(user), executor))
-            .toList();
-
-        var allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-
-        return allOf.thenApply(v -> futures.stream()
             .map(future -> future.handle((res, ex) -> {
                 if (ex != null) {
                     log.error("Error in completable future", ex);
@@ -41,6 +37,11 @@ public class UserOrdersService {
                 }
                 return res;
             }))
+            .toList();
+
+        var allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+
+        return allOf.thenApply(v -> futures.stream()
             .map(CompletableFuture::join)
             .flatMap(List::stream)
             .toList()
@@ -48,6 +49,7 @@ public class UserOrdersService {
     }
 
     public List<UserOrderDto> findOrdersByUserId(String userId) {
+        log.info("Retrieving user orders by userId='{}'", userId);
         var user = userInfoService.findUserById(userId);
         return findOrdersForUser(user);
     }
@@ -56,11 +58,6 @@ public class UserOrdersService {
         var orders = orderSearchService.findOrdersByPhone(userInfo.getPhone());
         var futures = orders.stream()
             .map(order -> CompletableFuture.supplyAsync(() -> getUserOrder(userInfo, order), executor))
-            .toList();
-
-        var allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-
-        return allOf.thenApply(v -> futures.stream()
             .map(future -> future.handle((res, ex) -> {
                 if (ex != null) {
                     log.error("Error in completable future", ex);
@@ -68,6 +65,11 @@ public class UserOrdersService {
                 }
                 return res;
             }))
+            .toList();
+
+        var allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+
+        return allOf.thenApply(v -> futures.stream()
             .map(CompletableFuture::join)
             .toList()
         ).join();
