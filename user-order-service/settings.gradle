@@ -1,0 +1,5 @@
+rootProject.name = 'user-order-service'
+include 'user-order-service-reactive'
+include 'user-order-service-non-reactive'
+include 'user-order-service-common'
+include 'user-order-service-common-test'

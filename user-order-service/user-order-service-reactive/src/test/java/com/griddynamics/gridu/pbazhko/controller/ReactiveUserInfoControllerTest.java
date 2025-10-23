@@ -1,0 +1,86 @@
+package com.griddynamics.gridu.pbazhko.controller;
+
+import com.griddynamics.gridu.pbazhko.tests.config.MongoDBTestContainerConfig;
+import com.griddynamics.gridu.pbazhko.dto.UserInfoDto;
+import com.griddynamics.gridu.pbazhko.model.UserInfo;
+import com.griddynamics.gridu.pbazhko.repository.ReactiveUserInfoRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_NDJSON_VALUE;
+
+@SpringBootTest
+@AutoConfigureWebTestClient
+@ContextConfiguration(initializers = MongoDBTestContainerConfig.Initializer.class)
+class ReactiveUserInfoControllerTest {
+
+    @Autowired
+    private WebTestClient webClient;
+
+    @Autowired
+    private ReactiveUserInfoRepository reactiveUserInfoRepository;
+
+    private static final UserInfo USER_1 = new UserInfo("1", "User 1", "123");
+    private static final UserInfo USER_2 = new UserInfo("2", "User 2", "456");
+
+    @BeforeEach
+    void setup() {
+        reactiveUserInfoRepository.deleteAll().block();
+    }
+
+    @Test
+    void findAllUsers_no_users_exist() {
+        webClient.get().uri("/users").exchange()
+            .expectStatus().isOk()
+            .expectBodyList(UserInfoDto.class).isEqualTo(Collections.emptyList());
+    }
+
+    @Test
+    void findAllUsers_two_users_exist() {
+        reactiveUserInfoRepository.save(USER_1).block();
+        reactiveUserInfoRepository.save(USER_2).block();
+        webClient.get().uri("/users").exchange()
+            .expectStatus().isOk()
+            .expectHeader().contentTypeCompatibleWith(APPLICATION_NDJSON_VALUE)
+            .expectBodyList(UserInfoDto.class)
+            .value(dtos -> {
+                assertThat(dtos).hasSize(2);
+                assertThat(dtos.get(0).getId()).isEqualTo(USER_1.getId());
+                assertThat(dtos.get(1).getId()).isEqualTo(USER_2.getId());
+                assertThat(dtos.get(0).getName()).isEqualTo(USER_1.getName());
+                assertThat(dtos.get(1).getName()).isEqualTo(USER_2.getName());
+                assertThat(dtos.get(0).getPhone()).isEqualTo(USER_1.getPhone());
+                assertThat(dtos.get(1).getPhone()).isEqualTo(USER_2.getPhone());
+            });
+    }
+
+    @Test
+    void findUserById_user_not_exists() {
+        reactiveUserInfoRepository.save(USER_2).block();
+        webClient.get().uri("/users/{id}", USER_1.getId()).exchange()
+            .expectStatus().isNotFound();
+    }
+
+    @Test
+    void findUserById_user_exists() {
+        reactiveUserInfoRepository.save(USER_1).block();
+        webClient.get().uri("/users/{id}", USER_1.getId()).exchange()
+            .expectStatus().isOk()
+            .expectHeader().contentTypeCompatibleWith(APPLICATION_JSON)
+            .expectBody(UserInfoDto.class)
+            .value(dto -> {
+                assertThat(dto.getId()).isEqualTo(USER_1.getId());
+                assertThat(dto.getName()).isEqualTo(USER_1.getName());
+                assertThat(dto.getPhone()).isEqualTo(USER_1.getPhone());
+            });
+    }
+}

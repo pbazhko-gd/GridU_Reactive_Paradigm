@@ -1,0 +1,14 @@
+spring.data.mongodb.uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@localhost:27017/${MONGODB_DB_NAME}
+
+order-search-service:
+  baseUrl: http://localhost:8081/orderSearchService
+  timeout: 100000
+product-info-service:
+  baseUrl: http://localhost:8082/productInfoService
+  timeout: 100000
+
+logging:
+  level:
+    root: INFO
+  pattern:
+    console: "%d{dd.MM.yyyy HH:mm:ss.SSS} [%thread] [requestId=%X{requestId}] %-5level %logger{36} - %msg%n"

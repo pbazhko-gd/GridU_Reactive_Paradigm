@@ -1,0 +1,42 @@
+package com.griddynamics.gridu.pbazhko.service;
+
+import com.griddynamics.gridu.pbazhko.dto.UserInfoDto;
+import com.griddynamics.gridu.pbazhko.exception.UserNotFoundException;
+import com.griddynamics.gridu.pbazhko.mapper.UserInfoMapper;
+import com.griddynamics.gridu.pbazhko.repository.ReactiveUserInfoRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import static com.griddynamics.gridu.pbazhko.util.MdcHelper.useMdcForFlux;
+import static com.griddynamics.gridu.pbazhko.util.MdcHelper.useMdcForMono;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class ReactiveUserInfoService {
+
+    private final ReactiveUserInfoRepository userInfoRepository;
+    private final UserInfoMapper userInfoMapper;
+
+    public Flux<UserInfoDto> findAllUsers() {
+        log.info("Retrieving all users");
+        return userInfoRepository.findAll()
+            .transform(useMdcForFlux())
+            .map(userInfoMapper::toDto)
+            .doOnNext(user -> log.info("Found user {}", user))
+            .log();
+    }
+
+    public Mono<UserInfoDto> findUserById(String userId) {
+        log.info("Retrieving user by userId='{}'", userId);
+        return userInfoRepository.findById(userId)
+            .transform(useMdcForMono())
+            .switchIfEmpty(Mono.error(new UserNotFoundException(userId)))
+            .map(userInfoMapper::toDto)
+            .doOnNext(user -> log.info("Found user {} by userId '{}'", user, userId))
+            .log();
+    }
+}
